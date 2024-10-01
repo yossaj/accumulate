@@ -56,14 +56,19 @@ class DashboardViewModel @Inject constructor(
         update { it.copy(goals = updatedGoals) }
     }
 
-    fun stopTimer(id: String){
+    fun stopTimer(id: String) {
         val currentGoals = uiState.value.goals
 
         val updatedGoals = currentGoals.map { currentGoal ->
             if (currentGoal.id == id) {
+
+                val updatedTime = currentGoal.totalAccumulatedTime +
+                        (currentGoal.currentTimerStart?.let { SystemClock.elapsedRealtime() - it } ?: 0L)
+
                 val goal = currentGoal.copy(
                     currentTimerStart = null,
-                    currentTimerRunning = false
+                    currentTimerRunning = false,
+                    totalAccumulatedTime = updatedTime
                 )
 
                 viewModelScope.launch {

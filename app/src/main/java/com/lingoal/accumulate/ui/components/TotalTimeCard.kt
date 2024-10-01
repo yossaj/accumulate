@@ -66,8 +66,6 @@ fun TotalTimeCard(
                 .padding(Dimens.PaddingMed),
             verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
         ) {
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -111,7 +109,9 @@ fun TotalTimeCard(
 
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                progress = { goal.progress },
+                progress = {
+                    goal.progress
+                           },
                 color = Color.Magenta,
                 trackColor = Color.LightGray
             )
