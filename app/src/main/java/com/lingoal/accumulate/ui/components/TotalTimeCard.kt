@@ -1,5 +1,6 @@
 package com.lingoal.accumulate.ui.components
 
+import android.os.SystemClock
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,13 +8,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,12 +29,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.lingoal.accumulate.models.Goal
 import com.lingoal.accumulate.ui.dimens.Dimens
 import com.lingoal.accumulate.ui.theme.AccumulateTheme
+import kotlinx.coroutines.delay
+import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun TotalTimeCard(
     modifier: Modifier = Modifier,
-    goal: Goal
+    goal: Goal,
+    startTimer: () -> Unit,
+    stopTimer: () -> Unit,
 ){
+
+    var currentTimeElapsed by remember { mutableStateOf("00:00:00") }
+
+    LaunchedEffect(goal.currentTimerStart) {
+        goal.currentTimerStart?.let { startTime ->
+            while (goal.currentTimerRunning) {
+                val timeSpan = SystemClock.elapsedRealtime() - startTime
+                val hours = (timeSpan / 3600000) % 24
+                val minutes = (timeSpan / 60000) % 60
+                val seconds = (timeSpan / 1000) % 60
+
+                currentTimeElapsed = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
+
+                delay(1.seconds)
+            }
+        }
+    }
+
     Card(
         modifier.padding(Dimens.MarginSmall)
     ) {
@@ -49,13 +80,24 @@ fun TotalTimeCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                    Text(text = "Elapsed Time")
-
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Rounded.PlayArrow,
-                            contentDescription = "Start Recording")
+                    if (goal.currentTimerRunning){
+                        Text(text = currentTimeElapsed)
                     }
+
+                    if (goal.currentTimerRunning){
+                        IconButton(onClick = { stopTimer.invoke() }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Stop,
+                                contentDescription = "Start Recording")
+                        }
+                    } else {
+                        IconButton(onClick = { startTimer.invoke() }) {
+                            Icon(
+                                imageVector = Icons.Rounded.PlayArrow,
+                                contentDescription = "Start Recording")
+                        }
+                    }
+
 
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
@@ -99,10 +141,14 @@ fun formatElapsedTime(milliseconds: Float): String {
 @Composable
 private fun TotalTimeCardPreview() {
     AccumulateTheme {
-        TotalTimeCard(goal = Goal(
+        TotalTimeCard(
+            goal = Goal(
             name = "Chinese Listening",
             goalTime = 100f,
-            totalAccumulatedTime = 10f
-        ))
+            totalAccumulatedTime = 10f,
+        ),
+            startTimer = {},
+            stopTimer = {}
+        )
     }
 }

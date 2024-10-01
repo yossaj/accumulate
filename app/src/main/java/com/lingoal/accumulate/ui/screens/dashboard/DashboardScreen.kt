@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,18 +22,20 @@ fun DashboardScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val goals = state.goals
-
     when {
-        goals.isNullOrEmpty() -> {
+        state.goals.isEmpty() -> {
             Text(text = "Not Items")
         } else -> {
         LazyColumn(
             modifier = modifier
         )
         {
-            items(goals){ goal ->
-                TotalTimeCard(goal = goal)
+            items(state.goals){ goal ->
+                TotalTimeCard(
+                    goal = goal,
+                    startTimer = { viewModel.startTimer(goal.id) },
+                    stopTimer = { viewModel.stopTimer(goal.id) }
+                    )
             }
         }
         }

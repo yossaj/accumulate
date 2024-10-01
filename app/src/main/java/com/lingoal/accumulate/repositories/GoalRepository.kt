@@ -16,6 +16,10 @@ class GoalRepository @Inject constructor(
         goalDao.insetGoal(goal)
     }
 
+    fun updateGoal(goal: Goal) {
+        goalDao.updateGoal(goal)
+    }
+
     fun deleteGoal(goal: Goal) {
         goalDao.deleteGoal(goal)
     }
