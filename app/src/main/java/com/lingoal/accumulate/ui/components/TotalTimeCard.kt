@@ -39,6 +39,7 @@ fun TotalTimeCard(
     goal: Goal,
     startTimer: () -> Unit,
     stopTimer: () -> Unit,
+    addTime: () -> Unit,
 ){
 
     var currentTimeElapsed by remember { mutableStateOf("00:00:00") }
@@ -97,7 +98,7 @@ fun TotalTimeCard(
                     }
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { addTime.invoke()}) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = "Start Recording")
@@ -148,7 +149,8 @@ private fun TotalTimeCardPreview() {
             totalAccumulatedTime = 10f,
         ),
             startTimer = {},
-            stopTimer = {}
+            stopTimer = {},
+            addTime = {}
         )
     }
 }

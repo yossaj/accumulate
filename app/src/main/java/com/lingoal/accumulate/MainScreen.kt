@@ -58,7 +58,6 @@ fun MainScreen(
             ){
                 DashboardScreen()
             }
-
         }
 
         if(openAddGoadSheet){
@@ -70,6 +69,8 @@ fun MainScreen(
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
+
+
 
     }
 }

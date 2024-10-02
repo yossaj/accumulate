@@ -32,6 +32,10 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun setHours(hours: String) = update { it.copy(hours = hours) }
+
+    fun setMinutes(minutes: String) = update { it.copy(minutes = minutes) }
+
     fun startTimer(id: String) {
         val currentGoals = uiState.value.goals
 
