@@ -1,7 +1,9 @@
 package com.lingoal.accumulate.ui.screens.dashboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +12,17 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,10 +35,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.ui.components.TotalTimeCard
@@ -87,64 +99,115 @@ fun DashboardScreen(
             ) {
                 Text(text = state.selectedGoal?.name ?: "")
 
-                OutlinedTextFieldDefaults.DecorationBox(
-                    enabled = true,
-                    interactionSource = remember { MutableInteractionSource() },
-                    visualTransformation = VisualTransformation.None,
-                    singleLine = true,
-                    innerTextField = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                Row {
+                    OutlinedTextFieldDefaults.DecorationBox(
+                        enabled = true,
+                        interactionSource = remember { MutableInteractionSource() },
+                        visualTransformation = VisualTransformation.None,
+                        singleLine = true,
+                        innerTextField = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
 
-                            TextField(
-                                modifier = Modifier.weight(0.5f),
-                                value = state.hours ?: "",
-                                onValueChange = { viewModel.setHours(it) },
-                                placeholder = {
-                                    Text(text = "Hours")
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    imeAction = ImeAction.Next,
-                                    keyboardType = KeyboardType.Number
+                                TextField(
+                                    modifier = Modifier.weight(0.5f),
+                                    value = state.hours ?: "",
+                                    onValueChange = { viewModel.setHours(it) },
+                                    placeholder = {
+                                        Text(text = "Hours")
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Next,
+                                        keyboardType = KeyboardType.Number
+                                    )
                                 )
-                            )
-                            Text(
-                                text = ":",
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                            TextField(
-                                modifier = Modifier.weight(0.5f),
-                                value = state.minutes ?: "",
-                                onValueChange = { viewModel.setMinutes(it) },
-                                placeholder = {
-                                    Text(text = "Minutes")
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    imeAction = ImeAction.Next,
-                                    keyboardType = KeyboardType.Number
+                                Text(
+                                    text = ":",
+                                    style = MaterialTheme.typography.titleLarge,
                                 )
-                            )
+                                TextField(
+                                    modifier = Modifier.weight(0.5f),
+                                    value = state.minutes ?: "",
+                                    onValueChange = { viewModel.setMinutes(it) },
+                                    placeholder = {
+                                        Text(text = "Minutes")
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Next,
+                                        keyboardType = KeyboardType.Number
+                                    )
+                                )
+                            }
+                        },
+                        value = " ",
+                        label = {
+                            Text(text = "Add Time")
                         }
-                    },
-                    value = " ",
-                    label = {
-                        Text(text = "Add Time")
+                    )
+
+
+                    IconButton(
+                        enabled = state.canAddTime,
+                        onClick = {
+                            viewModel.saveAddedTime()
+                            openAddTimeSheet = false
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add From Video link")
                     }
-                )
+                }
+
 
                 Button(
                     enabled = state.canAddTime,
                     onClick = {
-                        viewModel.addTime()
+                        viewModel.saveAddedTime()
                         openAddTimeSheet = false
                     }) {
                     Text(text = "Add")
                 }
+                
+                Spacer(modifier = Modifier.padding(Dimens.MarginMed))
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.weight(0.2f),
+                        textAlign = TextAlign.Center,
+                        text = state.videoDurationString ?: "00:00")
+                    OutlinedTextField(
+                        modifier = Modifier.weight(0.5f),
+                        singleLine = true,
+                        value = state.videoUrlString ?: "",
+                        onValueChange = { viewModel.setVideoUrl(it)},
+                        placeholder = { Text(text = "Paste a video link")}
+                    )
+
+                    IconButton(
+                        enabled = state.canSaveVideoDuration,
+                        onClick = {
+                            viewModel.saveVideoDuration()
+                            openAddTimeSheet = false
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add From Video link"
+                        )
+                    }
+
+
+                }
             }
 
-            Spacer(modifier = Modifier.navigationBarsPadding())
+            Spacer(modifier = Modifier
+                .navigationBarsPadding()
+                .padding(Dimens.MarginMed)
+            )
         }
     }
 }

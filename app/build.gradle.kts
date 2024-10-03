@@ -20,6 +20,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "String",
+            "YT_API_KEY",
+            "\"${project.findProperty("YT_API_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -41,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -70,6 +77,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation( libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
 
     testImplementation(libs.junit)

@@ -1,11 +1,13 @@
 package com.lingoal.accumulate.ui.screens.dashboard
 
+import android.net.Uri
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lingoal.accumulate.models.Goal
 import com.lingoal.accumulate.repositories.DatabaseTransactionProvider
 import com.lingoal.accumulate.repositories.GoalRepository
+import com.lingoal.accumulate.repositories.YTRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val goalRepository: GoalRepository,
-    private val databaseTransactionProvider: DatabaseTransactionProvider
+    private val databaseTransactionProvider: DatabaseTransactionProvider,
+    private val ytRepository: YTRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<DashboardUIState> =
@@ -38,7 +41,52 @@ class DashboardViewModel @Inject constructor(
 
     fun setGoal(goal: Goal) = update { it.copy(selectedGoal = goal) }
 
-    fun addTime(){
+    fun setVideoUrl(urlString: String) {
+        update { it.copy( videoUrlString = urlString ) }
+
+        uiState.value.videoUrlString?.let { url ->
+            val videoId = extractVideoId(url)
+            videoId?.let {
+                viewModelScope.launch {
+                    ytRepository.getVideoDuration(videoId)?.let { response ->
+                        update { it.copy(
+                            videoDurationString = response.duration,
+                            videoDuration = response.durationTime
+                        ) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun extractVideoId(urlString: String): String? {
+        val uri = Uri.parse(urlString)
+        return uri.getQueryParameter("v")
+    }
+
+    fun saveVideoDuration(){
+        uiState.value.videoDuration?.let { duration ->
+            uiState.value.selectedGoal?.let { goal ->
+                goal.totalAccumulatedTime += duration
+                viewModelScope.launch {
+                    databaseTransactionProvider.runAsTransaction {
+                        goalRepository.updateGoal(goal)
+                    }
+
+                    update { it.copy(
+                        videoUrlString = null,
+                        videoDurationString = null,
+                        videoDuration = null,
+                        selectedGoal = null
+                    ) }
+                }
+            }
+        }
+    }
+
+
+
+    fun saveAddedTime(){
         val hours = uiState.value.hours ?: return
         val minutes = uiState.value.minutes ?: return
         val selectedGoal = uiState.value.selectedGoal ?: return
