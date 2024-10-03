@@ -1,6 +1,5 @@
 package com.lingoal.accumulate.ui.screens.dashboard
 
-import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,10 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,10 +24,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -56,20 +52,25 @@ fun DashboardScreen(
     when {
         state.goals.isEmpty() -> {
             Text(text = "Not Items")
-        } else -> {
-        LazyColumn(
-            modifier = modifier
-        )
-        {
-            items(state.goals){ goal ->
-                TotalTimeCard(
-                    goal = goal,
-                    startTimer = { viewModel.startTimer(goal.id) },
-                    stopTimer = { viewModel.stopTimer(goal.id) },
-                    addTime = { openAddTimeSheet = !openAddTimeSheet }
-                    )
-            }
         }
+
+        else -> {
+            LazyColumn(
+                modifier = modifier
+            )
+            {
+                items(state.goals) { goal ->
+                    TotalTimeCard(
+                        goal = goal,
+                        startTimer = { viewModel.startTimer(goal.id) },
+                        stopTimer = { viewModel.stopTimer(goal.id) },
+                        addTime = {
+                            viewModel.setGoal(goal)
+                            openAddTimeSheet = !openAddTimeSheet
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -81,7 +82,10 @@ fun DashboardScreen(
                 modifier = modifier
                     .padding(Dimens.MarginMed)
                     .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(text = state.selectedGoal?.name ?: "")
 
                 OutlinedTextFieldDefaults.DecorationBox(
                     enabled = true,
@@ -126,9 +130,18 @@ fun DashboardScreen(
                     },
                     value = " ",
                     label = {
-                        Text(text = "Time")
+                        Text(text = "Add Time")
                     }
                 )
+
+                Button(
+                    enabled = state.canAddTime,
+                    onClick = {
+                        viewModel.addTime()
+                        openAddTimeSheet = false
+                    }) {
+                    Text(text = "Add")
+                }
             }
 
             Spacer(modifier = Modifier.navigationBarsPadding())

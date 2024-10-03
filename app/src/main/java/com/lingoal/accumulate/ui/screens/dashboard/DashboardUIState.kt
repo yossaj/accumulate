@@ -6,5 +6,7 @@ data class DashboardUIState(
     val goals: List<Goal> = mutableListOf(),
     val hours: String? = null,
     val minutes: String? = null,
-
-)
+    val selectedGoal: Goal? = null,
+){
+    val canAddTime = !hours.isNullOrEmpty() && !minutes.isNullOrEmpty()
+}

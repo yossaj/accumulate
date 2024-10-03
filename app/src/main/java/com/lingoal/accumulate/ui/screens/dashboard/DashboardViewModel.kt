@@ -36,6 +36,26 @@ class DashboardViewModel @Inject constructor(
 
     fun setMinutes(minutes: String) = update { it.copy(minutes = minutes) }
 
+    fun setGoal(goal: Goal) = update { it.copy(selectedGoal = goal) }
+
+    fun addTime(){
+        val hours = uiState.value.hours ?: return
+        val minutes = uiState.value.minutes ?: return
+        val selectedGoal = uiState.value.selectedGoal ?: return
+
+        val timeInMilliseconds = (hours.toLong() * 3600000) + (minutes.toLong() * 60000)
+
+        selectedGoal.totalAccumulatedTime += timeInMilliseconds
+
+        viewModelScope.launch {
+            databaseTransactionProvider.runAsTransaction {
+                goalRepository.updateGoal(selectedGoal)
+            }
+            setHours("")
+            setMinutes("")
+        }
+    }
+
     fun startTimer(id: String) {
         val currentGoals = uiState.value.goals
 
@@ -95,13 +115,5 @@ class DashboardViewModel @Inject constructor(
                 block.invoke(current)
             }
         }
-    }
-
-    fun formatElapsedTime(milliseconds: Float): String {
-        val totalMinutes = (milliseconds / 1000 / 60).toInt()
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-
-        return "${hours}hr ${minutes} min"
     }
 }
