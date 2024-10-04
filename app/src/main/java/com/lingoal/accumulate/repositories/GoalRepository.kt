@@ -12,6 +12,10 @@ class GoalRepository @Inject constructor(
         return goalDao.getAllGoals()
     }
 
+    fun getGoal(id: String) : Goal? {
+        return goalDao.getGoal(id)
+    }
+
     fun insertGoal(goal: Goal) {
         goalDao.insetGoal(goal)
     }

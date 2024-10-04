@@ -1,6 +1,7 @@
 package com.lingoal.accumulate.ui.screens.dashboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,9 +52,9 @@ import com.lingoal.accumulate.ui.theme.AccumulateTheme
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    openGoal: (String) -> Unit
 ){
-
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     var openAddTimeSheet by rememberSaveable { mutableStateOf(false) }
@@ -73,6 +74,9 @@ fun DashboardScreen(
             {
                 items(state.goals) { goal ->
                     TotalTimeCard(
+                        modifier = Modifier.clickable {
+                            openGoal.invoke(goal.id)
+                        },
                         goal = goal,
                         startTimer = { viewModel.startTimer(goal.id) },
                         stopTimer = { viewModel.stopTimer(goal.id) },
@@ -199,8 +203,6 @@ fun DashboardScreen(
                             contentDescription = "Add From Video link"
                         )
                     }
-
-
                 }
             }
 
@@ -216,6 +218,8 @@ fun DashboardScreen(
 @Composable
 private fun DashboardPreview() {
     AccumulateTheme {
-        DashboardScreen()
+        DashboardScreen(
+            openGoal = {}
+        )
     }
 }
