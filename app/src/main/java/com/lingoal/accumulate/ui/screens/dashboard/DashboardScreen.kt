@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -53,6 +55,7 @@ import com.lingoal.accumulate.ui.theme.AccumulateTheme
 fun DashboardScreen(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel(),
+    addInitialGoal: () -> Unit,
     openGoal: (String) -> Unit
 ){
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,7 +67,27 @@ fun DashboardScreen(
 
     when {
         state.goals.isEmpty() -> {
-            Text(text = "Not Items")
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(Dimens.MarginMed),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall, Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = "No Goals Added",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium
+                    )
+                Text(
+                    text = "Create a new goal to track your accumulated hours towards that goal.",
+                    textAlign = TextAlign.Center
+                    )
+                Button(onClick = { addInitialGoal.invoke() }) {
+                    Text(text = "Get Started")
+                }
+            }
+
         }
 
         else -> {
@@ -219,6 +242,7 @@ fun DashboardScreen(
 private fun DashboardPreview() {
     AccumulateTheme {
         DashboardScreen(
+            addInitialGoal = {},
             openGoal = {}
         )
     }

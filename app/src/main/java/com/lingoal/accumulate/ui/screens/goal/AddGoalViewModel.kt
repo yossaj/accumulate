@@ -37,6 +37,7 @@ class AddGoalViewModel @Inject constructor(
         viewModelScope.launch {
             databaseTransactionProvider.runAsTransaction {
                 goalRepository.insertGoal(goal)
+                clearFields()
             }
         }
     }
@@ -44,6 +45,11 @@ class AddGoalViewModel @Inject constructor(
     fun updateName(name: String) = update { it.copy(name = name) }
 
     fun updateCumulativeHours(time: String) = update { it.copy(cumulativeHours = time) }
+
+    fun clearFields() = update { it.copy(
+        name = null,
+        cumulativeHours = null
+    ) }
 
     private fun update(block: (current: AddGoalUIState) -> AddGoalUIState) {
         viewModelScope.launch {

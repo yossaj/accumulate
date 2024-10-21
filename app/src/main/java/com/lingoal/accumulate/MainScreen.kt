@@ -2,6 +2,7 @@ package com.lingoal.accumulate
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -53,7 +54,7 @@ fun MainScreen(
         screenName ?: "Dashboard"
     )
 
-    var openAddGoadSheet by rememberSaveable { mutableStateOf(false) }
+    var openAddGoalSheet by rememberSaveable { mutableStateOf(false) }
     val addGoalSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -63,7 +64,7 @@ fun MainScreen(
         topBar = { AppBar(
             currentScreen = currentScreen,
             navigateUp = { navController.navigateUp() },
-            addGoal = { openAddGoadSheet = !openAddGoadSheet }
+            addGoal = { openAddGoalSheet = !openAddGoalSheet }
         ) }
     ) { innerPadding ->
         NavHost(
@@ -75,6 +76,7 @@ fun MainScreen(
                 route = Screens.Dashboard.name
             ) {
                 DashboardScreen(
+                    addInitialGoal = { openAddGoalSheet = !openAddGoalSheet },
                     openGoal = { goalId ->
                         navController.navigate(Screens.GoalDetail.name + "?goalId=$goalId")
                     }
@@ -95,12 +97,13 @@ fun MainScreen(
             }
         }
 
-        if(openAddGoadSheet){
+        if(openAddGoalSheet){
             ModalBottomSheet(
-                onDismissRequest = { openAddGoadSheet = false },
+                modifier = Modifier.fillMaxHeight(0.5f),
+                onDismissRequest = { openAddGoalSheet = false },
                 sheetState = addGoalSheetState
             ) {
-                AddGoalSheet( dismiss = { openAddGoadSheet = false })
+                AddGoalSheet( dismiss = { openAddGoalSheet = false })
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
