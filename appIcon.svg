@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="appIcon.svg"
+   inkscape:export-filename="appIcon.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.61282588"
+     inkscape:cx="168.07384"
+     inkscape:cy="807.73352"
+     inkscape:window-width="1512"
+     inkscape:window-height="945"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(3.4539447,56.558344)">
+    <g
+       id="text4"
+       style="font-size:59.7142px;fill:#ffffff;stroke-width:0.311011"
+       aria-label="Ac">
+      <path
+         style="font-weight:496;font-family:'.New York';-inkscape-font-specification:'.New York weight=496'"
+         d="M 103.99093,97.59015 91.482442,61.901585 H 88.887441 L 76.816309,95.374193 q -1.195451,3.353092 -2.099328,5.131687 -0.903877,1.74944 -1.807754,2.47837 -0.903877,0.72894 -2.157642,0.99135 v 0.0292 h 9.067928 v -0.0292 q -1.895226,-0.29157 -2.682474,-1.07882 -0.787248,-0.8164 -0.612304,-2.53668 0.174944,-1.749444 1.166293,-4.84012 l 8.71804,-26.445693 h -0.02916 L 96.0893,97.47352 q 0.75809,2.1868 0.728933,3.55719 0,1.3704 -0.787248,2.07017 -0.758091,0.67062 -2.274271,0.87472 v 0.0292 h 15.336756 v -0.0292 q -1.19545,-0.26241 -2.04102,-0.87472 -0.84556,-0.6123 -1.57449,-1.92438 -0.69978,-1.312079 -1.48703,-3.58635 z M 79.586254,88.609694 h 17.027877 l -0.05831,-0.408203 H 79.732041 Z"
+         id="path11" />
+      <path
+         style="font-weight:496;font-size:41.4682px;font-family:'.New York';-inkscape-font-specification:'.New York weight=496'"
+         d="m 118.53477,104.30848 q 2.51077,0 4.39385,-0.97191 1.88308,-0.97191 2.77399,-2.53102 l -0.0202,-0.0202 q -0.70869,0.80992 -1.86283,1.37687 -1.15415,0.56695 -2.91574,0.56695 -1.84258,0 -3.46243,-1.0934 -1.61985,-1.11365 -2.61201,-3.219457 -0.99216,-2.105807 -0.99216,-5.102533 0,-2.348785 0.78968,-4.231862 0.78968,-1.903326 2.28804,-2.996725 1.51861,-1.113648 3.70541,-1.113648 1.39712,0 2.49052,0.546699 1.11365,0.526452 1.74134,1.417371 0.64794,0.890918 0.64794,1.923573 v 0 q 0,-0.971911 -0.66819,-1.579355 -0.64794,-0.607444 -1.43761,-0.607444 -0.89092,0 -1.55911,0.627692 -0.64794,0.607445 -0.64794,1.559107 0,0.911167 0.62769,1.559108 0.64794,0.627692 1.55911,0.627692 0.87067,0 1.49836,-0.627692 0.64794,-0.627693 0.64794,-1.559108 0,-1.133896 -0.76943,-2.105807 -0.74918,-0.992159 -2.1868,-1.599603 -1.41737,-0.627693 -3.48268,-0.627693 -3.07772,0 -5.34551,1.356626 -2.26779,1.336378 -3.50293,3.583922 -1.23514,2.227296 -1.23514,4.839306 0,2.935981 1.23514,5.203774 1.23514,2.247547 3.38144,3.523177 2.16655,1.27563 4.9203,1.27563 z"
+         id="path12" />
+    </g>
+  </g>
+</svg>
