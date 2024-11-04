@@ -7,4 +7,6 @@ object Dimens {
     val MarginMed = 16.dp
     val PaddingMed = 20.dp
     val FABMargin = 72.dp
+
+    val RoundingMed = 16.dp
 }

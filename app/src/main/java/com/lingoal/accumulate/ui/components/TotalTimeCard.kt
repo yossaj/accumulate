@@ -75,7 +75,6 @@ fun TotalTimeCard(
             ) {
                 Text(text = goal.name)
 
-                
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -97,25 +96,15 @@ fun TotalTimeCard(
                         }
                     }
 
-
                     IconButton(onClick = { addTime.invoke()}) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = "Start Recording")
                     }
                 }
-
-
             }
 
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                progress = {
-                    goal.progress
-                           },
-                color = Color.Magenta,
-                trackColor = Color.LightGray
-            )
+            ProgressBar(progress = goal.progress)
 
             Row(
                 modifier = Modifier
