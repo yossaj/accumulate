@@ -41,7 +41,6 @@ fun TotalTimeCard(
     stopTimer: () -> Unit,
     addTime: () -> Unit,
 ){
-
     var currentTimeElapsed by remember { mutableStateOf("00:00:00") }
 
     LaunchedEffect(goal.currentTimerStart) {
@@ -115,7 +114,6 @@ fun TotalTimeCard(
                 Text(text = "Goal: ${goal.goalTime.toInt()}hr")
             }
         }
-
     }
 }
 

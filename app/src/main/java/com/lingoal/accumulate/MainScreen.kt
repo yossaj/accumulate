@@ -17,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -54,6 +56,8 @@ fun MainScreen(
         screenName ?: "Dashboard"
     )
 
+    val dynamicScreenTitle = remember { mutableStateOf<String?>(null) }
+
     var openAddGoalSheet by rememberSaveable { mutableStateOf(false) }
     val addGoalSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -63,6 +67,7 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = { AppBar(
             currentScreen = currentScreen,
+            dynamicScreenTitle = dynamicScreenTitle,
             navigateUp = { navController.navigateUp() },
             addGoal = { openAddGoalSheet = !openAddGoalSheet }
         ) }
@@ -77,7 +82,8 @@ fun MainScreen(
             ) {
                 DashboardScreen(
                     addInitialGoal = { openAddGoalSheet = !openAddGoalSheet },
-                    openGoal = { goalId ->
+                    openGoal = { goalId, goalName ->
+                        dynamicScreenTitle.value = goalName
                         navController.navigate(Screens.GoalDetail.name + "?goalId=$goalId")
                     }
                 )
@@ -116,14 +122,17 @@ fun MainScreen(
 @Composable
 fun AppBar(
     currentScreen: Screens,
+    dynamicScreenTitle: State<String?>,
     addGoal: () -> Unit,
     navigateUp: () -> Unit,
 ){
     TopAppBar(
-        title = { Text(
-            text = stringResource(id = currentScreen.title),
-            maxLines = 1,
-        ) },
+        title = {
+            Text(
+                text = getTitle(currentScreen, dynamicScreenTitle),
+                maxLines = 1,
+            )
+        },
         navigationIcon = {
             if (currentScreen != Screens.Dashboard) {
                 IconButton(onClick = navigateUp) {
@@ -142,6 +151,18 @@ fun AppBar(
             }
         }
     )
+}
+
+@Composable
+private fun getTitle(
+    currentScreen: Screens,
+    dynamicScreenTitle: State<String?>
+) = if (currentScreen != Screens.Dashboard) {
+    dynamicScreenTitle.value.takeIf { !it.isNullOrEmpty() }
+        ?: stringResource(id = currentScreen.title)
+
+} else {
+    stringResource(id = currentScreen.title)
 }
 
 @Preview(showBackground = true)
