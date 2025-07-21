@@ -1,6 +1,7 @@
 package com.lingoal.accumulate
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,23 +9,30 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.filled.Sports
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,64 +51,82 @@ enum class Screens(@StringRes val title: Int){
     GoalDetail(R.string.goal_detail)
 }
 
+enum class RootDestination(
+    val route: String,
+    @StringRes val title: Int,
+    val icon: ImageVector,
+    val contentDescription: String
+) {
+    TIME("time", R.string.time, Icons.Default.Timer, "Time"),
+    WEIGHT("weight", R.string.weight, Icons.Default.Sports, "Weight"),
+}
+
 @Composable
 fun MainScreen(
     navController: NavHostController = rememberNavController(),
 ){
+
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val screenName = backStackEntry?.destination?.route?.split("/", "?")?.first()
 
-    val currentScreen = Screens.valueOf(
-        screenName ?: "Dashboard"
+    val currentTab = RootDestination.valueOf(
+        screenName?.uppercase() ?: "TIME"
     )
-
-    val dynamicScreenTitle = remember { mutableStateOf<String?>(null) }
 
     var openAddGoalSheet by rememberSaveable { mutableStateOf(false) }
     val addGoalSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
+    val startDestination = RootDestination.TIME
+    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { AppBar(
-            currentScreen = currentScreen,
-            dynamicScreenTitle = dynamicScreenTitle,
+        topBar = {
+            AppBar(
+            currentTab = currentTab,
             navigateUp = { navController.navigateUp() },
             addGoal = { openAddGoalSheet = !openAddGoalSheet }
         ) }
     ) { innerPadding ->
-
-
-        NavHost(
-            navController = navController,
-            startDestination = Screens.Dashboard.name,
+        Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(
-                route = Screens.Dashboard.name
-            ) {
-                DashboardScreen(
-                    addInitialGoal = { openAddGoalSheet = !openAddGoalSheet },
-                    openGoal = { goalId, goalName ->
-                        dynamicScreenTitle.value = goalName
-                        navController.navigate(Screens.GoalDetail.name + "?goalId=$goalId")
-                    }
-                )
+            PrimaryTabRow(selectedTabIndex = selectedDestination) {
+                RootDestination.entries.forEachIndexed { index, destination ->
+                    Tab(
+                        selected = selectedDestination == index,
+                        onClick = {
+                            navController.navigate(route = destination.route)
+                            selectedDestination = index
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(destination.title),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
+                }
             }
 
-            composable(
-                route = Screens.GoalDetail.name + "?goalId={goalId}",
-                arguments = listOf(
-                    navArgument("goalId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+            NavHost(
+                navController,
+                startDestination = startDestination.route
             ) {
-                GoalDetailScreen()
+                RootDestination.entries.forEach { destination ->
+                    composable(destination.route) {
+                        when (destination) {
+                            RootDestination.TIME -> TimeAccumulateScreen(
+                                onAddGoal =  { openAddGoalSheet = !openAddGoalSheet }
+                            )
+                            RootDestination.WEIGHT -> WeightAccumulateScreen()
+                        }
+                    }
+                }
             }
         }
 
@@ -114,34 +140,72 @@ fun MainScreen(
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
-
-
-
     }
 }
 
 @Composable
+private fun TimeAccumulateScreen(
+    modifier: Modifier = Modifier,
+    timeNavController: NavHostController = rememberNavController(),
+    onAddGoal: () -> Unit,
+){
+    NavHost(
+        navController = timeNavController,
+        startDestination = Screens.Dashboard.name,
+        modifier = modifier
+    ) {
+        composable(
+            route = Screens.Dashboard.name
+        ) {
+            DashboardScreen(
+                addInitialGoal = onAddGoal,
+                openGoal = { goalId, goalName ->
+                    timeNavController.navigate(Screens.GoalDetail.name + "?goalId=$goalId")
+                }
+            )
+        }
+
+        composable(
+            route = Screens.GoalDetail.name + "?goalId={goalId}",
+            arguments = listOf(
+                navArgument("goalId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
+            GoalDetailScreen()
+        }
+    }
+}
+
+@Composable
+fun WeightAccumulateScreen(
+    navController: NavHostController = rememberNavController(),
+){
+
+}
+
+@Composable
 fun AppBar(
-    currentScreen: Screens,
-    dynamicScreenTitle: State<String?>,
+    currentTab: RootDestination,
     addGoal: () -> Unit,
     navigateUp: () -> Unit,
 ){
     TopAppBar(
         title = {
             Text(
-                text = getTitle(currentScreen, dynamicScreenTitle),
+                text = stringResource(currentTab.title),
                 maxLines = 1,
             )
         },
         navigationIcon = {
-            if (currentScreen != Screens.Dashboard) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back navigation"
-                    )
-                }
+            IconButton(onClick = navigateUp) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back navigation"
+                )
             }
         },
         actions = {
@@ -152,18 +216,6 @@ fun AppBar(
             }
         }
     )
-}
-
-@Composable
-private fun getTitle(
-    currentScreen: Screens,
-    dynamicScreenTitle: State<String?>
-) = if (currentScreen != Screens.Dashboard) {
-    dynamicScreenTitle.value.takeIf { !it.isNullOrEmpty() }
-        ?: stringResource(id = currentScreen.title)
-
-} else {
-    stringResource(id = currentScreen.title)
 }
 
 @Preview(showBackground = true)

@@ -3,4 +3,7 @@
 
     <string name="dashboard">Dashboard</string>
     <string name="goal_detail">Goal Detail</string>
+    
+    <string name="time">Time</string>
+    <string name="weight">Weight</string>
 </resources>

@@ -63,7 +63,7 @@ fun DashboardScreen(
         state.goals.isEmpty() -> {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(Dimens.MarginMed),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall, Alignment.CenterVertically)
@@ -85,9 +85,7 @@ fun DashboardScreen(
         }
 
         else -> {
-            LazyColumn(
-                modifier = modifier
-            )
+            LazyColumn(modifier = modifier)
             {
                 items(state.goals) { goal ->
                     TotalTimeCard(
