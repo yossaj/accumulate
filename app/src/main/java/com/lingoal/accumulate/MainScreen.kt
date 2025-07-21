@@ -47,7 +47,6 @@ enum class Screens(@StringRes val title: Int){
 fun MainScreen(
     navController: NavHostController = rememberNavController(),
 ){
-
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val screenName = backStackEntry?.destination?.route?.split("/", "?")?.first()
@@ -72,6 +71,8 @@ fun MainScreen(
             addGoal = { openAddGoalSheet = !openAddGoalSheet }
         ) }
     ) { innerPadding ->
+
+
         NavHost(
             navController = navController,
             startDestination = Screens.Dashboard.name,
