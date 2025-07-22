@@ -77,7 +77,9 @@ fun DashboardScreen(
                     text = "Create a new goal to track your accumulated hours towards that goal.",
                     textAlign = TextAlign.Center
                     )
-                Button(onClick = { addInitialGoal.invoke() }) {
+                Button(onClick = {
+                    addInitialGoal.invoke()
+                }) {
                     Text(text = "Get Started")
                 }
             }

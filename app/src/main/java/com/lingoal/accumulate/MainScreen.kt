@@ -22,11 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,6 +32,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
@@ -41,14 +41,20 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.lingoal.accumulate.ui.screens.dashboard.DashboardScreen
 import com.lingoal.accumulate.ui.screens.goal.AddGoalSheet
 import com.lingoal.accumulate.ui.screens.goal.GoalDetailScreen
 import com.lingoal.accumulate.ui.theme.AccumulateTheme
 
-enum class Screens(@StringRes val title: Int){
+enum class TimeScreens(@StringRes val title: Int){
     Dashboard(R.string.app_name),
-    GoalDetail(R.string.goal_detail)
+    Detail(R.string.goal_detail)
+}
+
+enum class LiftScreens(@StringRes val title: Int){
+    Dashboard(R.string.app_name),
+    Detail(R.string.goal_detail)
 }
 
 enum class RootDestination(
@@ -70,9 +76,9 @@ fun MainScreen(
 
     val screenName = backStackEntry?.destination?.route?.split("/", "?")?.first()
 
-    val currentTab = RootDestination.valueOf(
-        screenName?.uppercase() ?: "TIME"
-    )
+//    val currentTab = RootDestination.valueOf(
+//        screenName?.uppercase() ?: "TIME"
+//    )
 
     var openAddGoalSheet by rememberSaveable { mutableStateOf(false) }
     val addGoalSheetState = rememberModalBottomSheetState(
@@ -86,9 +92,9 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             AppBar(
-            currentTab = currentTab,
-            navigateUp = { navController.navigateUp() },
-            addGoal = { openAddGoalSheet = !openAddGoalSheet }
+                title = screenName,
+                navigateUp = { navController.navigateUp() },
+                addGoal = { openAddGoalSheet = !openAddGoalSheet }
         ) }
     ) { innerPadding ->
         Column(
@@ -99,7 +105,11 @@ fun MainScreen(
                     Tab(
                         selected = selectedDestination == index,
                         onClick = {
-                            navController.navigate(route = destination.route)
+                            navController.navigate(destination.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                            }
                             selectedDestination = index
                         },
                         text = {
@@ -108,25 +118,23 @@ fun MainScreen(
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = destination.icon,
+                                contentDescription = destination.contentDescription
+                            )
                         }
                     )
                 }
             }
 
             NavHost(
-                navController,
-                startDestination = startDestination.route
+                navController = navController,
+                startDestination = RootDestination.TIME.route
             ) {
-                RootDestination.entries.forEach { destination ->
-                    composable(destination.route) {
-                        when (destination) {
-                            RootDestination.TIME -> TimeAccumulateScreen(
-                                onAddGoal =  { openAddGoalSheet = !openAddGoalSheet }
-                            )
-                            RootDestination.WEIGHT -> WeightAccumulateScreen()
-                        }
-                    }
-                }
+                timeGraph(navController, onAddGoal = { openAddGoalSheet = true })
+                weightGraph(navController)
             }
         }
 
@@ -144,29 +152,22 @@ fun MainScreen(
 }
 
 @Composable
-private fun TimeAccumulateScreen(
-    modifier: Modifier = Modifier,
-    timeNavController: NavHostController = rememberNavController(),
-    onAddGoal: () -> Unit,
-){
-    NavHost(
-        navController = timeNavController,
-        startDestination = Screens.Dashboard.name,
-        modifier = modifier
-    ) {
-        composable(
-            route = Screens.Dashboard.name
-        ) {
+fun LiftAccumulateScreen(){
+    Text("Lift Accumulate Screen")
+}
+
+fun NavGraphBuilder.timeGraph(navController: NavHostController, onAddGoal: () -> Unit) {
+    navigation(startDestination = TimeScreens.Dashboard.name, route = RootDestination.TIME.route) {
+        composable(TimeScreens.Dashboard.name) {
             DashboardScreen(
                 addInitialGoal = onAddGoal,
                 openGoal = { goalId, goalName ->
-                    timeNavController.navigate(Screens.GoalDetail.name + "?goalId=$goalId")
+                    navController.navigate(TimeScreens.Detail.name + "?goalId=$goalId")
                 }
             )
         }
-
         composable(
-            route = Screens.GoalDetail.name + "?goalId={goalId}",
+            route = TimeScreens.Detail.name + "?goalId={goalId}",
             arguments = listOf(
                 navArgument("goalId") {
                     type = NavType.StringType
@@ -180,23 +181,25 @@ private fun TimeAccumulateScreen(
     }
 }
 
-@Composable
-fun WeightAccumulateScreen(
-    navController: NavHostController = rememberNavController(),
-){
-
+fun NavGraphBuilder.weightGraph(navController: NavHostController) {
+    navigation(startDestination = LiftScreens.Dashboard.name, route = RootDestination.WEIGHT.route) {
+        composable(LiftScreens.Dashboard.name) {
+            LiftAccumulateScreen()
+        }
+    }
 }
+
 
 @Composable
 fun AppBar(
-    currentTab: RootDestination,
+    title: String?,
     addGoal: () -> Unit,
     navigateUp: () -> Unit,
 ){
     TopAppBar(
         title = {
             Text(
-                text = stringResource(currentTab.title),
+                text = title.orEmpty(),
                 maxLines = 1,
             )
         },
