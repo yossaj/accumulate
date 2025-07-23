@@ -10,19 +10,19 @@ import java.time.LocalDate
 @Dao
 interface LiftGoalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(goal: LiftGoal): Long
+    fun insert(goal: LiftGoal): Long
 
-    @Query("SELECT * FROM goals ORDER BY startDate DESC")
-    suspend fun getAllGoals(): List<LiftGoal>
+    @Query("SELECT * FROM lift_goals ORDER BY startDate DESC")
+    fun getAllGoals(): List<LiftGoal>
 
-    @Query("SELECT * FROM goals WHERE :date BETWEEN startDate AND endDate LIMIT 1")
-    suspend fun getGoalForDate(date: LocalDate): LiftGoal?
+    @Query("SELECT * FROM lift_goals WHERE :date BETWEEN startDate AND endDate LIMIT 1")
+    fun getGoalForDate(date: LocalDate): LiftGoal?
 
     @Transaction
     @Query("""
-    SELECT * FROM goals 
-    WHERE :date BETWEEN startDate AND endDate 
+    SELECT * FROM lift_goals
+    WHERE :date BETWEEN startDate AND endDate
     LIMIT 1
     """)
-    suspend fun getGoalWithSessionsAndLifts(date: LocalDate): GoalWithSessionsAndLifts?
+    fun getGoalWithSessionsAndLifts(date: LocalDate): GoalWithSessionsAndLifts?
 }
