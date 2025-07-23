@@ -42,9 +42,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.lingoal.accumulate.ui.screens.dashboard.DashboardScreen
-import com.lingoal.accumulate.ui.screens.goal.AddGoalSheet
-import com.lingoal.accumulate.ui.screens.goal.GoalDetailScreen
+import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
+import com.lingoal.accumulate.ui.screens.time.goal.AddGoalSheet
+import com.lingoal.accumulate.ui.screens.time.goal.GoalDetailScreen
 import com.lingoal.accumulate.ui.theme.AccumulateTheme
 
 enum class TimeScreens(@StringRes val title: Int){

@@ -1,4 +1,4 @@
-package com.lingoal.accumulate.ui.screens.dashboard
+package com.lingoal.accumulate.ui.screens.time.dashboard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

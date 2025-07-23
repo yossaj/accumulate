@@ -1,11 +1,11 @@
-package com.lingoal.accumulate.ui.screens.goal
+package com.lingoal.accumulate.ui.screens.time.goal
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lingoal.accumulate.repositories.DatabaseTransactionProvider
 import com.lingoal.accumulate.repositories.GoalRepository
-import com.lingoal.accumulate.ui.screens.dashboard.DashboardUIState
+import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

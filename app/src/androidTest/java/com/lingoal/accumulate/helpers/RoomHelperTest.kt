@@ -102,4 +102,5 @@ class RoomHelperTest {
 //        assertTrue("Old goal not found", result.moveToFirst())
 //        assertEquals("Old Goal", result.getString(result.getColumnIndexOrThrow("name")))
 //    }
+    }
 }

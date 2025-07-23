@@ -1,4 +1,4 @@
-package com.lingoal.accumulate.ui.screens.goal
+package com.lingoal.accumulate.ui.screens.time.goal
 
 import com.lingoal.accumulate.models.Goal
 

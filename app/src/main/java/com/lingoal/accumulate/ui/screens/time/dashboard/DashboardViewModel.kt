@@ -1,4 +1,4 @@
-package com.lingoal.accumulate.ui.screens.dashboard
+package com.lingoal.accumulate.ui.screens.time.dashboard
 
 import android.net.Uri
 import android.os.SystemClock
