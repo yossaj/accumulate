@@ -42,6 +42,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.lingoal.accumulate.ui.screens.lifts.LiftGoalScreen
 import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
 import com.lingoal.accumulate.ui.screens.time.goal.AddGoalSheet
 import com.lingoal.accumulate.ui.screens.time.goal.GoalDetailScreen
@@ -151,11 +152,6 @@ fun MainScreen(
     }
 }
 
-@Composable
-fun LiftAccumulateScreen(){
-    Text("Lift Accumulate Screen")
-}
-
 fun NavGraphBuilder.timeGraph(navController: NavHostController, onAddGoal: () -> Unit) {
     navigation(startDestination = TimeScreens.Dashboard.name, route = RootDestination.TIME.route) {
         composable(TimeScreens.Dashboard.name) {
@@ -184,7 +180,7 @@ fun NavGraphBuilder.timeGraph(navController: NavHostController, onAddGoal: () ->
 fun NavGraphBuilder.weightGraph(navController: NavHostController) {
     navigation(startDestination = LiftScreens.Dashboard.name, route = RootDestination.WEIGHT.route) {
         composable(LiftScreens.Dashboard.name) {
-            LiftAccumulateScreen()
+            LiftGoalScreen()
         }
     }
 }

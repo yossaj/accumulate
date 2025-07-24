@@ -1,4 +1,8 @@
 package com.lingoal.accumulate.ui.screens.lifts
 
-class LiftGoalUIState {
-}
+import com.lingoal.accumulate.models.GoalWithSessionsAndLifts
+
+data class LiftGoalUIState(
+    val liftGoal: String? = null,
+    val goalWithSessionsAndLifts: GoalWithSessionsAndLifts? = null
+)

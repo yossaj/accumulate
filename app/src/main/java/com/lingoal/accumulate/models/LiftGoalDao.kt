@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
@@ -24,5 +25,5 @@ interface LiftGoalDao {
     WHERE :date BETWEEN startDate AND endDate
     LIMIT 1
     """)
-    fun getGoalWithSessionsAndLifts(date: LocalDate): GoalWithSessionsAndLifts?
+    fun getGoalWithSessionsAndLifts(date: LocalDate): Flow<GoalWithSessionsAndLifts>
 }
