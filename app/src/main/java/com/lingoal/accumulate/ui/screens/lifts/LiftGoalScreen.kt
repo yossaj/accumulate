@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lingoal.accumulate.extensions.endofWeek
+import com.lingoal.accumulate.extensions.startOfWeek
 import com.lingoal.accumulate.ui.dimens.Dimens
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -37,6 +39,7 @@ fun LiftGoalScreen(
     viewModel: LiftGoalViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = modifier
@@ -45,9 +48,9 @@ fun LiftGoalScreen(
     ) {
         item {
             WeekNavigation(
-                currentDate = LocalDate.now(),
-                onPreviousWeek = {},
-                onNextWeek = {}
+                currentDate = currentDateState,
+                onPreviousWeek = { viewModel.decrementWeek() },
+                onNextWeek = { viewModel.incrementWeek()}
             )
         }
 
@@ -73,7 +76,8 @@ fun LiftGoalScreen(
                                 singleLine = false,
                             )
                             Button(
-                                onClick = {},
+                                enabled = state.canSaveGoal,
+                                onClick = { viewModel.addGoal() },
                                 shape = RoundedCornerShape(Dimens.RoundingSmall)
                             ) {
                                 Text(
@@ -99,9 +103,6 @@ fun WeekNavigation(
     onPreviousWeek: () -> Unit,
     onNextWeek: () -> Unit
 ) {
-    val weekStart = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-    val weekEnd = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -116,7 +117,7 @@ fun WeekNavigation(
         }
 
         Text(
-            text = "$weekStart – $weekEnd",
+            text = "${currentDate.startOfWeek} – ${currentDate.endofWeek}",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(horizontal = Dimens.MarginMed)
         )

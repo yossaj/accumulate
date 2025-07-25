@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.ui.dimens.Dimens
 
 @Composable
-fun AddGoalSheet(
+fun AddTimeGoalSheet(
     modifier: Modifier = Modifier,
     viewModel: AddGoalViewModel = hiltViewModel(),
     dismiss: () -> Unit,
@@ -59,6 +59,6 @@ fun AddGoalSheet(
 @Preview
 @Composable
 private fun PreviewAddGoal() {
-    AddGoalSheet(dismiss = {})
+    AddTimeGoalSheet(dismiss = {})
 
 }

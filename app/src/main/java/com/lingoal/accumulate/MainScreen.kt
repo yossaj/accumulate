@@ -42,9 +42,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.lingoal.accumulate.ui.screens.lifts.AddLiftGoalSheet
 import com.lingoal.accumulate.ui.screens.lifts.LiftGoalScreen
 import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
-import com.lingoal.accumulate.ui.screens.time.goal.AddGoalSheet
+import com.lingoal.accumulate.ui.screens.time.goal.AddTimeGoalSheet
 import com.lingoal.accumulate.ui.screens.time.goal.GoalDetailScreen
 import com.lingoal.accumulate.ui.theme.AccumulateTheme
 
@@ -141,11 +142,20 @@ fun MainScreen(
 
         if(openAddGoalSheet){
             ModalBottomSheet(
-                modifier = Modifier.fillMaxHeight(0.5f),
+                modifier = Modifier.fillMaxHeight(
+                    when(selectedDestination){
+                        0 -> 0.5f
+                        1 -> 0.9f
+                        else -> 0.5f
+                    }
+                ),
                 onDismissRequest = { openAddGoalSheet = false },
                 sheetState = addGoalSheetState
             ) {
-                AddGoalSheet( dismiss = { openAddGoalSheet = false })
+                when(selectedDestination){
+                    0 -> AddTimeGoalSheet( dismiss = { openAddGoalSheet = false })
+                    1 -> AddLiftGoalSheet( dismiss = { openAddGoalSheet = false })
+                }
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }

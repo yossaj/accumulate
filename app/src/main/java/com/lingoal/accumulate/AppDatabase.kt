@@ -9,6 +9,7 @@ import com.lingoal.accumulate.models.GoalDao
 import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftEntryDao
 import com.lingoal.accumulate.models.LiftGoal
+import com.lingoal.accumulate.models.LiftGoal.PeriodType
 import com.lingoal.accumulate.models.LiftGoalDao
 import com.lingoal.accumulate.models.LiftSession
 import com.lingoal.accumulate.models.LiftSessionDao
@@ -16,7 +17,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Database(entities = [Goal::class, LiftGoal::class, LiftSession::class, LiftEntry::class], version = AppDatabase.VERSION)
-@TypeConverters(DateConverters::class)
+@TypeConverters(DateConverters::class, EnumConverters::class)
 abstract class AppDatabase: RoomDatabase() {
     companion object {
         const val VERSION = 2
@@ -41,4 +42,12 @@ class DateConverters {
 
     @TypeConverter
     fun toLocalDateTime(dateTime: String?): LocalDateTime? = dateTime?.let { LocalDateTime.parse(it) }
+}
+
+class EnumConverters {
+    @TypeConverter
+    fun fromPeriodType(value: PeriodType) = value.name
+
+    @TypeConverter
+    fun toPeriodType(value: String) = enumValueOf<PeriodType>(value)
 }

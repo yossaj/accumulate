@@ -10,5 +10,11 @@ data class LiftGoal(
     val targetWeightKg: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val periodType: String // e.g., "weekly" or "monthly"
-)
+    val periodType: PeriodType
+){
+
+    enum class PeriodType() {
+        Weekly,
+        Monthly,
+    }
+}

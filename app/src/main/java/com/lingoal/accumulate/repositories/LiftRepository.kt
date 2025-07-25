@@ -16,11 +16,11 @@ class LiftRepository @Inject constructor(
     private val liftSessionDao: LiftSessionDao,
     private val liftEntryDao: LiftEntryDao
 ) {
-    fun insertLiftGoal(liftGoal: LiftGoal) = liftGoalDao.insert(liftGoal)
+    suspend fun insertLiftGoal(liftGoal: LiftGoal) = liftGoalDao.insert(liftGoal)
 
     fun insertLiftSession(liftSession: LiftSession) = liftSessionDao.insert(liftSession)
 
     fun insertLiftEntry(liftEntry: LiftEntry) = liftEntryDao.insert(liftEntry)
 
-    fun getGoalWithSessionsAndLifts(date: LocalDate): Flow<GoalWithSessionsAndLifts> = liftGoalDao.getGoalWithSessionsAndLifts(date)
+    fun getGoalWithSessionsAndLifts(date: LocalDate): Flow<GoalWithSessionsAndLifts?> = liftGoalDao.getGoalWithSessionsAndLifts(date)
 }

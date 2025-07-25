@@ -18,9 +18,15 @@ data class LiftEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val sessionId: Long,
     val liftName: String,
-    val liftType: String,
+    val liftType: LiftTypes,
     val weightKg: Float,
     val reps: Int,
     val sets: Int,
     val timestamp: LocalDateTime = LocalDateTime.now()
-)
+){
+    enum class LiftTypes(){
+        Pull,
+        Push,
+        Legs
+    }
+}
