@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lingoal.accumulate.extensions.endofWeek
 import com.lingoal.accumulate.extensions.startOfWeek
-import com.lingoal.accumulate.models.GoalWithSessionsAndLifts
+import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.models.LiftGoal.PeriodType
 import com.lingoal.accumulate.repositories.LiftRepository
-import com.lingoal.accumulate.ui.screens.time.goal.AddGoalUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +34,6 @@ class LiftGoalViewModel @Inject constructor(
                     _uiState.update { it.copy(goalWithSessionsAndLifts = goalWithSessionsAndLifts) }
                 }
             }
-
         }
     }
 
@@ -53,6 +51,12 @@ class LiftGoalViewModel @Inject constructor(
         val liftGoal = LiftGoal(id = 0, targetWeightKg = liftGoalAmount, startDate = startOfWeek, endDate = endOfWeek, periodType = PeriodType.Weekly)
         viewModelScope.launch {
             liftRepository.insertLiftGoal(liftGoal)
+        }
+    }
+
+    fun incrementSet(liftEntry: LiftEntry){
+        viewModelScope.launch {
+            liftRepository.incrementSets(liftEntry.id)
         }
     }
 }

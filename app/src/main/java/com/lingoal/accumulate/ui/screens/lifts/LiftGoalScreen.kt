@@ -3,15 +3,16 @@ package com.lingoal.accumulate.ui.screens.lifts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -28,23 +29,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.extensions.endofWeek
 import com.lingoal.accumulate.extensions.startOfWeek
+import com.lingoal.accumulate.models.LiftGoal
+import com.lingoal.accumulate.ui.components.ProgressBar
 import com.lingoal.accumulate.ui.dimens.Dimens
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LiftGoalScreen(
     modifier: Modifier = Modifier,
-    viewModel: LiftGoalViewModel = hiltViewModel()
+    viewModel: LiftGoalViewModel = hiltViewModel(),
+    onGoalSet: (LiftGoal) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm")
 
     LazyColumn(
         modifier = modifier
         .padding(Dimens.MarginMed)
         .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
     ) {
         item {
             WeekNavigation(
@@ -87,7 +92,47 @@ fun LiftGoalScreen(
                         }
                     } else {
                         state.goalWithSessionsAndLifts?.goal?.let { goal ->
-                            Text(text = goal.targetWeightKg.toString() + " Kg")
+                            onGoalSet.invoke(goal)
+                            Text(text = state.cumulativeTotal.toString() +  " / " + goal.targetWeightKg.toString() + " Kg")
+                            ProgressBar(progress = state.cumulativeTotal.toFloat() / goal.targetWeightKg.toFloat())
+
+                        }
+                    }
+                }
+            }
+        }
+
+        state.goalWithSessionsAndLifts?.sessionsWithLifts?.let { sessionWithLifts ->
+
+            sessionWithLifts.forEach { sessionWithLifts ->
+                item{
+                    Text(text = sessionWithLifts.session.date.format(formatter))
+                }
+
+                items(sessionWithLifts.lifts) { liftEntry ->
+                    Card {
+                        Column(
+                            modifier = Modifier
+                                .padding(Dimens.MarginSmall)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(text = liftEntry.liftName)
+                                Text(text = liftEntry.liftType.toString())
+                            }
+                            Text(text = "Reps: " + liftEntry.reps.toString())
+                            Row( verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "Sets: " + liftEntry.sets.toString())
+                                IconButton(onClick = { viewModel.incrementSet(liftEntry) }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.AddCircle,
+                                        contentDescription = "Add Goal")
+                                }
+                            }
                         }
                     }
                 }

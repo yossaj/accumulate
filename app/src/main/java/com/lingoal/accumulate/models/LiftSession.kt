@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity(
     tableName = "lift_sessions",
@@ -16,7 +17,7 @@ import java.time.LocalDate
 )
 data class LiftSession(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val date: LocalDate,
+    val date: LocalDateTime,
     val goalId: Long? = null,
     val note: String? = null
 )

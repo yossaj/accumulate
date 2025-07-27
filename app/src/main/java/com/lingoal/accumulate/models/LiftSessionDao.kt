@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface LiftSessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(session: LiftSession): Long
+    suspend fun insert(session: LiftSession): Long
 
     @Query("SELECT * FROM lift_sessions ORDER BY date DESC")
     fun getAllSessions(): List<LiftSession>

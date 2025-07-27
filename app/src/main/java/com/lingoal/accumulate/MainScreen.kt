@@ -42,6 +42,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.ui.screens.lifts.AddLiftGoalSheet
 import com.lingoal.accumulate.ui.screens.lifts.LiftGoalScreen
 import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
@@ -90,6 +91,8 @@ fun MainScreen(
     val startDestination = RootDestination.TIME
     var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
+    var currentLiftGoal: LiftGoal? by rememberSaveable { mutableStateOf(null) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -136,7 +139,7 @@ fun MainScreen(
                 startDestination = RootDestination.TIME.route
             ) {
                 timeGraph(navController, onAddGoal = { openAddGoalSheet = true })
-                weightGraph(navController)
+                weightGraph(navController, { liftGoal ->   currentLiftGoal = liftGoal })
             }
         }
 
@@ -154,7 +157,10 @@ fun MainScreen(
             ) {
                 when(selectedDestination){
                     0 -> AddTimeGoalSheet( dismiss = { openAddGoalSheet = false })
-                    1 -> AddLiftGoalSheet( dismiss = { openAddGoalSheet = false })
+                    1 -> AddLiftGoalSheet(
+                        liftGoal = currentLiftGoal,
+                        dismiss = { openAddGoalSheet = false },
+                    )
                 }
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
@@ -187,10 +193,12 @@ fun NavGraphBuilder.timeGraph(navController: NavHostController, onAddGoal: () ->
     }
 }
 
-fun NavGraphBuilder.weightGraph(navController: NavHostController) {
+fun NavGraphBuilder.weightGraph(navController: NavHostController, onGoalSet: (LiftGoal) -> Unit) {
     navigation(startDestination = LiftScreens.Dashboard.name, route = RootDestination.WEIGHT.route) {
         composable(LiftScreens.Dashboard.name) {
-            LiftGoalScreen()
+            LiftGoalScreen(
+                onGoalSet = onGoalSet
+            )
         }
     }
 }

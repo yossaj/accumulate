@@ -18,9 +18,13 @@ class LiftRepository @Inject constructor(
 ) {
     suspend fun insertLiftGoal(liftGoal: LiftGoal) = liftGoalDao.insert(liftGoal)
 
-    fun insertLiftSession(liftSession: LiftSession) = liftSessionDao.insert(liftSession)
+    suspend fun insertLiftSession(liftSession: LiftSession) = liftSessionDao.insert(liftSession)
 
-    fun insertLiftEntry(liftEntry: LiftEntry) = liftEntryDao.insert(liftEntry)
+    suspend fun insertLiftEntry(liftEntry: LiftEntry) = liftEntryDao.insert(liftEntry)
+
+    suspend fun insertLiftEntries(entries: List<LiftEntry>) = liftEntryDao.insert(entries)
+
+    suspend fun incrementSets(entryId: Long) = liftEntryDao.incrementSets(entryId)
 
     fun getGoalWithSessionsAndLifts(date: LocalDate): Flow<GoalWithSessionsAndLifts?> = liftGoalDao.getGoalWithSessionsAndLifts(date)
 }

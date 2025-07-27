@@ -9,7 +9,13 @@ import java.time.LocalDateTime
 @Dao
 interface LiftEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entry: LiftEntry): Long
+    suspend fun insert(entry: LiftEntry): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(entries: List<LiftEntry>)
+
+    @Query("UPDATE lift_entries SET sets = sets + 1 WHERE id = :entryId")
+    suspend fun incrementSets(entryId: Long)
 
     @Query("SELECT * FROM lift_entries WHERE sessionId = :sessionId")
     fun getEntriesForSession(sessionId: Long): List<LiftEntry>

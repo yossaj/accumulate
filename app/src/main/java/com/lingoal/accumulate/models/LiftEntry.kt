@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 )
 data class LiftEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val sessionId: Long,
+    var sessionId: Long,
     val liftName: String,
     val liftType: LiftTypes,
     val weightKg: Float,
