@@ -24,7 +24,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.models.LiftEntry.LiftTypes
-import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.ui.components.DropdownMenu
 import com.lingoal.accumulate.ui.dimens.Dimens
 

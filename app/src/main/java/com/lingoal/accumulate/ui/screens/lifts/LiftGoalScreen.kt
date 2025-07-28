@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.rounded.AddBox
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -47,25 +48,27 @@ fun LiftGoalScreen(
 
     LazyColumn(
         modifier = modifier
-        .padding(Dimens.MarginMed)
-        .fillMaxWidth(),
+            .padding(Dimens.MarginMed)
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
     ) {
         item {
             WeekNavigation(
                 currentDate = currentDateState,
                 onPreviousWeek = { viewModel.decrementWeek() },
-                onNextWeek = { viewModel.incrementWeek()}
+                onNextWeek = { viewModel.incrementWeek() }
             )
         }
 
         item {
             Card {
                 Column(
-                    modifier = Modifier.padding(Dimens.MarginMed).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(Dimens.MarginMed)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (state.goalWithSessionsAndLifts?.goal == null){
+                    if (state.goalWithSessionsAndLifts?.goal == null) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
                             verticalAlignment = Alignment.CenterVertically
@@ -87,13 +90,14 @@ fun LiftGoalScreen(
                             ) {
                                 Text(
                                     modifier = Modifier.padding(vertical = Dimens.PaddingSmall),
-                                    text = "Set", maxLines = 1)
+                                    text = "Set", maxLines = 1
+                                )
                             }
                         }
                     } else {
                         state.goalWithSessionsAndLifts?.goal?.let { goal ->
                             onGoalSet.invoke(goal.id)
-                            Text(text = state.cumulativeTotal.toString() +  " / " + goal.targetWeightKg.toString() + " Kg")
+                            Text(text = state.cumulativeTotal.toString() + " / " + goal.targetWeightKg.toString() + " Kg")
                             ProgressBar(progress = state.cumulativeTotal.toFloat() / goal.targetWeightKg.toFloat())
 
                         }
@@ -105,7 +109,7 @@ fun LiftGoalScreen(
         state.goalWithSessionsAndLifts?.sessionsWithLifts?.let { sessionWithLifts ->
 
             sessionWithLifts.forEach { sessionWithLifts ->
-                item{
+                item {
                     Text(text = sessionWithLifts.session.date.format(formatter))
                 }
 
@@ -121,16 +125,51 @@ fun LiftGoalScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Text(text = liftEntry.liftName)
-                                Text(text = liftEntry.liftType.toString())
+
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                ) {
+                                    Text(
+                                        text = liftEntry.liftName,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Row {
+                                        Text(
+                                            text = "${liftEntry.weightKg} Kg",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                        Text(" • ")
+                                        Text(
+                                            text = "${liftEntry.reps} reps",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = liftEntry.liftType.toString(),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
-                            Text(text = "Reps: " + liftEntry.reps.toString())
-                            Row( verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Sets: " + liftEntry.sets.toString())
-                                IconButton(onClick = { viewModel.incrementSet(liftEntry) }) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.AddCircle,
-                                        contentDescription = "Add Goal")
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "${liftEntry.sets}",
+                                    style = MaterialTheme.typography.displaySmall
+                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(text = "Sets")
+                                    IconButton(onClick = { viewModel.incrementSet(liftEntry) }) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.AddBox,
+                                            contentDescription = "Add Goal"
+                                        )
+                                    }
                                 }
                             }
                         }
