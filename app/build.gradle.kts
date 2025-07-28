@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
 
     id("com.google.devtools.ksp")
+    id("androidx.room")
 }
 
 android {
@@ -28,6 +29,11 @@ android {
             "YT_API_KEY",
             "\"${project.findProperty("YT_API_KEY")}\""
         )
+    }
+
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     buildTypes {
@@ -54,6 +60,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
+
+    sourceSets["androidTest"].assets.srcDir(file("$projectDir/schemas"))
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
