@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lingoal.accumulate.models.LiftEntry
-import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.models.LiftSession
 import com.lingoal.accumulate.repositories.LiftRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -29,7 +27,7 @@ class AddLiftGoalViewModel @Inject constructor(
 
     fun setWeight(weight: String) = _uiState.update { it.copy(weight = weight.toFloatOrNull()) }
 
-    fun setLiftGoal(liftGoal: LiftGoal) = _uiState.update { it.copy(liftGoal = liftGoal) }
+    fun setLiftGoal(liftGoal: Long) = _uiState.update { it.copy(liftGoalId = liftGoal) }
 
     fun addGoal(){
         val liftName = _uiState.value.liftName ?: return
@@ -59,7 +57,7 @@ class AddLiftGoalViewModel @Inject constructor(
     }
 
     fun createSession(){
-        val liftGoalId = _uiState.value.liftGoal?.id ?: return
+        val liftGoalId = _uiState.value.liftGoalId ?: return
 
         val liftSession = LiftSession(goalId = liftGoalId, date = LocalDateTime.now())
 

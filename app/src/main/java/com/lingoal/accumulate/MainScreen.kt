@@ -91,7 +91,7 @@ fun MainScreen(
     val startDestination = RootDestination.TIME
     var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
-    var currentLiftGoal: LiftGoal? by rememberSaveable { mutableStateOf(null) }
+    var currentLiftGoalId: Long? by rememberSaveable { mutableStateOf(null) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -139,7 +139,7 @@ fun MainScreen(
                 startDestination = RootDestination.TIME.route
             ) {
                 timeGraph(navController, onAddGoal = { openAddGoalSheet = true })
-                weightGraph(navController, { liftGoal ->   currentLiftGoal = liftGoal })
+                weightGraph(navController, onGoalSet = { liftGoal ->   currentLiftGoalId = liftGoal })
             }
         }
 
@@ -158,7 +158,7 @@ fun MainScreen(
                 when(selectedDestination){
                     0 -> AddTimeGoalSheet( dismiss = { openAddGoalSheet = false })
                     1 -> AddLiftGoalSheet(
-                        liftGoal = currentLiftGoal,
+                        liftGoalId = currentLiftGoalId,
                         dismiss = { openAddGoalSheet = false },
                     )
                 }
@@ -193,7 +193,7 @@ fun NavGraphBuilder.timeGraph(navController: NavHostController, onAddGoal: () ->
     }
 }
 
-fun NavGraphBuilder.weightGraph(navController: NavHostController, onGoalSet: (LiftGoal) -> Unit) {
+fun NavGraphBuilder.weightGraph(navController: NavHostController, onGoalSet: (Long) -> Unit) {
     navigation(startDestination = LiftScreens.Dashboard.name, route = RootDestination.WEIGHT.route) {
         composable(LiftScreens.Dashboard.name) {
             LiftGoalScreen(

@@ -31,14 +31,14 @@ import com.lingoal.accumulate.ui.dimens.Dimens
 @Composable
 fun AddLiftGoalSheet(
     modifier: Modifier = Modifier,
-    liftGoal: LiftGoal? = null,
+    liftGoalId: Long? = null,
     viewModel: AddLiftGoalViewModel = hiltViewModel(),
     dismiss: () -> Unit,
 ) {
 
-    LaunchedEffect(liftGoal) {
-        if (liftGoal != null){
-            viewModel.setLiftGoal(liftGoal)
+    LaunchedEffect(liftGoalId) {
+        if (liftGoalId != null){
+            viewModel.setLiftGoal(liftGoalId)
         }
     }
 
@@ -80,7 +80,6 @@ fun AddLiftGoalSheet(
 
                     Button(onClick = {
                         viewModel.addGoal()
-//                    dismiss.invoke()
                     }) {
                         Text("Add")
                     }
@@ -113,6 +112,7 @@ fun AddLiftGoalSheet(
                 .background(MaterialTheme.colorScheme.background),
             onClick = {
                 viewModel.saveSessionAndGoals()
+                dismiss.invoke()
             }) {
             Text("Start Session")
         }

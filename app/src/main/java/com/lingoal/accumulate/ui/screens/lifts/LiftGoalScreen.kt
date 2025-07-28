@@ -39,7 +39,7 @@ import java.time.format.DateTimeFormatter
 fun LiftGoalScreen(
     modifier: Modifier = Modifier,
     viewModel: LiftGoalViewModel = hiltViewModel(),
-    onGoalSet: (LiftGoal) -> Unit
+    onGoalSet: (Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
@@ -92,7 +92,7 @@ fun LiftGoalScreen(
                         }
                     } else {
                         state.goalWithSessionsAndLifts?.goal?.let { goal ->
-                            onGoalSet.invoke(goal)
+                            onGoalSet.invoke(goal.id)
                             Text(text = state.cumulativeTotal.toString() +  " / " + goal.targetWeightKg.toString() + " Kg")
                             ProgressBar(progress = state.cumulativeTotal.toFloat() / goal.targetWeightKg.toFloat())
 
@@ -139,7 +139,6 @@ fun LiftGoalScreen(
             }
         }
     }
-
 }
 
 @Composable
