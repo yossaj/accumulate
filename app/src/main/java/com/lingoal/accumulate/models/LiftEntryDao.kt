@@ -17,6 +17,9 @@ interface LiftEntryDao {
     @Query("UPDATE lift_entries SET sets = sets + 1 WHERE id = :entryId")
     suspend fun incrementSets(entryId: Long)
 
+    @Query("UPDATE lift_entries SET sets = sets - 1 WHERE id = :entryId")
+    suspend fun decrementSet(entryId: Long)
+
     @Query("SELECT * FROM lift_entries WHERE sessionId = :sessionId")
     fun getEntriesForSession(sessionId: Long): List<LiftEntry>
 

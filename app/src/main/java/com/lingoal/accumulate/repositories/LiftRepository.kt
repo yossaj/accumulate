@@ -7,6 +7,7 @@ import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.models.LiftGoalDao
 import com.lingoal.accumulate.models.LiftSession
 import com.lingoal.accumulate.models.LiftSessionDao
+import com.lingoal.accumulate.models.SessionWithLifts
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -26,5 +27,9 @@ class LiftRepository @Inject constructor(
 
     suspend fun incrementSets(entryId: Long) = liftEntryDao.incrementSets(entryId)
 
-    fun getGoalWithSessionsAndLifts(date: LocalDate): Flow<GoalWithSessionsAndLifts?> = liftGoalDao.getGoalWithSessionsAndLifts(date)
+    suspend fun decrementSet(entryId: Long) = liftEntryDao.decrementSet(entryId)
+
+    fun getCurrentGoal(date: LocalDate): Flow<LiftGoal?> =  liftGoalDao.getSelectedGoal(date)
+
+    fun getSessionsWithLifts(goalId: Long): Flow<List<SessionWithLifts>> = liftGoalDao.getSessionsWithLifts(goalId)
 }

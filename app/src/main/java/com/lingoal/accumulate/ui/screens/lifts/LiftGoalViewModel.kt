@@ -30,8 +30,15 @@ class LiftGoalViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             selectedDate.collectLatest { selectedDate ->
-                liftRepository.getGoalWithSessionsAndLifts(selectedDate).collectLatest { goalWithSessionsAndLifts ->
-                    _uiState.update { it.copy(goalWithSessionsAndLifts = goalWithSessionsAndLifts) }
+                liftRepository.getCurrentGoal(selectedDate).collectLatest { liftGoal  ->
+                    _uiState.update { it.copy(liftGoal = liftGoal) }
+                    liftGoal?.let {
+                        launch {
+                            liftRepository.getSessionsWithLifts(liftGoal.id).collectLatest { sessionsWithLifts ->
+                                _uiState.update { it.copy(sessionsWithLifts = sessionsWithLifts) }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -41,10 +48,10 @@ class LiftGoalViewModel @Inject constructor(
 
     fun decrementWeek() = _selectedDate.update { it.minusWeeks(1) }
 
-    fun setLiftGoal(goal: String?) = _uiState.update { it.copy(liftGoal = goal) }
+    fun setLiftGoal(goal: String?) = _uiState.update { it.copy(liftGoalId = goal) }
 
     fun addGoal(){
-        val liftGoalAmount = _uiState.value.liftGoal?.toIntOrNull() ?: return
+        val liftGoalAmount = _uiState.value.liftGoalId?.toIntOrNull() ?: return
         val startOfWeek = _selectedDate.value.startOfWeek
         val endOfWeek = _selectedDate.value.endofWeek
 
@@ -57,6 +64,12 @@ class LiftGoalViewModel @Inject constructor(
     fun incrementSet(liftEntry: LiftEntry){
         viewModelScope.launch {
             liftRepository.incrementSets(liftEntry.id)
+        }
+    }
+
+    fun decrementSet(liftEntry: LiftEntry){
+        viewModelScope.launch {
+            liftRepository.decrementSet(liftEntry.id)
         }
     }
 }

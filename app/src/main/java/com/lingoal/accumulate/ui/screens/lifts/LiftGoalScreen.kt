@@ -13,7 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.rounded.AddBox
-import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -30,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.extensions.endofWeek
 import com.lingoal.accumulate.extensions.startOfWeek
-import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.ui.components.ProgressBar
 import com.lingoal.accumulate.ui.dimens.Dimens
 import java.time.LocalDate
@@ -68,14 +68,14 @@ fun LiftGoalScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (state.goalWithSessionsAndLifts?.goal == null) {
+                    if (state.liftGoal == null) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier.weight(0.75f),
-                                value = state.liftGoal.orEmpty(),
+                                value = state.liftGoalId.orEmpty(),
                                 onValueChange = viewModel::setLiftGoal,
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number
@@ -95,84 +95,91 @@ fun LiftGoalScreen(
                             }
                         }
                     } else {
-                        state.goalWithSessionsAndLifts?.goal?.let { goal ->
+                        state.liftGoal?.let { goal ->
                             onGoalSet.invoke(goal.id)
                             Text(text = state.cumulativeTotal.toString() + " / " + goal.targetWeightKg.toString() + " Kg")
                             ProgressBar(progress = state.cumulativeTotal.toFloat() / goal.targetWeightKg.toFloat())
-
                         }
                     }
                 }
             }
         }
 
-        state.goalWithSessionsAndLifts?.sessionsWithLifts?.let { sessionWithLifts ->
 
-            sessionWithLifts.forEach { sessionWithLifts ->
-                item {
-                    Text(text = sessionWithLifts.session.date.format(formatter))
-                }
+        state.sessionsWithLifts.forEach { sessionWithLifts ->
+            item {
+                Text(text = sessionWithLifts.session.date.format(formatter))
+            }
 
-                items(sessionWithLifts.lifts) { liftEntry ->
-                    Card {
+            items(sessionWithLifts.lifts) { liftEntry ->
+                Card {
+                    Row(
+                        modifier = Modifier
+                            .padding(Dimens.MarginSmall)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
                         Column(
-                            modifier = Modifier
-                                .padding(Dimens.MarginSmall)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                            horizontalAlignment = Alignment.Start,
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
+                            Text(
+                                text = liftEntry.liftType.toString(),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                            Text(
+                                text = liftEntry.liftName,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Row {
+                                Text(
+                                    text = "${liftEntry.weightKg} Kg",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(" • ")
+                                Text(
+                                    text = "${liftEntry.reps} reps",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
+                        }
 
+                        Card {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Column(
-                                    horizontalAlignment = Alignment.Start,
+                                    modifier = Modifier,
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = liftEntry.liftName,
-                                        style = MaterialTheme.typography.titleMedium
+                                        text = "${liftEntry.sets}",
+                                        style = MaterialTheme.typography.displaySmall
                                     )
-                                    Row {
-                                        Text(
-                                            text = "${liftEntry.weightKg} Kg",
-                                            style = MaterialTheme.typography.titleSmall
-                                        )
-                                        Text(" • ")
-                                        Text(
-                                            text = "${liftEntry.reps} reps",
-                                            style = MaterialTheme.typography.titleSmall
-                                        )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(text = "Sets")
                                     }
                                 }
 
-                                Text(
-                                    text = liftEntry.liftType.toString(),
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "${liftEntry.sets}",
-                                    style = MaterialTheme.typography.displaySmall
-                                )
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(text = "Sets")
+                                Column {
                                     IconButton(onClick = { viewModel.incrementSet(liftEntry) }) {
                                         Icon(
-                                            imageVector = Icons.Rounded.AddBox,
-                                            contentDescription = "Add Goal"
+                                            imageVector = Icons.Rounded.KeyboardArrowUp,
+                                            contentDescription = "Add Set"
+                                        )
+                                    }
+
+                                    IconButton(onClick = { viewModel.decrementSet(liftEntry) }) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                                            contentDescription = "Remove Set"
                                         )
                                     }
                                 }
                             }
                         }
+
                     }
                 }
             }

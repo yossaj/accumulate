@@ -1,15 +1,16 @@
 package com.lingoal.accumulate.ui.screens.lifts
 
-import com.lingoal.accumulate.models.GoalWithSessionsAndLifts
+import com.lingoal.accumulate.models.LiftGoal
+import com.lingoal.accumulate.models.SessionWithLifts
 
 data class LiftGoalUIState(
-    val liftGoal: String? = null,
-    val goalWithSessionsAndLifts: GoalWithSessionsAndLifts? = null
+    val liftGoalId: String? = null,
+    val liftGoal: LiftGoal? = null,
+    val sessionsWithLifts: List<SessionWithLifts> = emptyList()
 ){
-    val cumulativeTotal = goalWithSessionsAndLifts
-        ?.sessionsWithLifts?.sumOf { sessionWithList ->
+    val cumulativeTotal = sessionsWithLifts.sumOf { sessionWithList ->
             sessionWithList.lifts.sumOf { it.reps * it.sets * it.weightKg.toDouble() }
-        } ?: 0.0
+    }
 
-    val canSaveGoal = liftGoal?.toIntOrNull() != null
+    val canSaveGoal = liftGoalId?.toIntOrNull() != null
 }
