@@ -11,3 +11,7 @@ data class SessionWithLifts(
     )
     val lifts: List<LiftEntry>
 )
+
+
+val SessionWithLifts.cumulativeWeight: Double
+    get() = this.lifts.sumOf { it.weightKg.toDouble() * (it.reps * it.sets).toDouble() }

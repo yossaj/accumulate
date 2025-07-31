@@ -148,7 +148,7 @@ fun MainScreen(
                 modifier = Modifier.fillMaxHeight(
                     when(selectedDestination){
                         0 -> 0.5f
-                        1 -> 0.9f
+                        1 -> 0.95f
                         else -> 0.5f
                     }
                 ),

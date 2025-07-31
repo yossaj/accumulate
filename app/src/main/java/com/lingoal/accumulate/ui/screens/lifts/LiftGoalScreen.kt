@@ -12,11 +12,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.rounded.AddBox
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,10 +31,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.extensions.endofWeek
 import com.lingoal.accumulate.extensions.startOfWeek
+import com.lingoal.accumulate.models.cumulativeWeight
 import com.lingoal.accumulate.ui.components.ProgressBar
 import com.lingoal.accumulate.ui.dimens.Dimens
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun LiftGoalScreen(
@@ -44,7 +48,8 @@ fun LiftGoalScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm")
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yy HH:mm")
+    val decimalFormatter = DecimalFormat("#.## Kg")
 
     LazyColumn(
         modifier = modifier
@@ -108,7 +113,14 @@ fun LiftGoalScreen(
 
         state.sessionsWithLifts.forEach { sessionWithLifts ->
             item {
-                Text(text = sessionWithLifts.session.date.format(formatter))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = sessionWithLifts.session.date.format(dateTimeFormatter))
+                    Text(text = decimalFormatter.format(sessionWithLifts.cumulativeWeight))
+                }
+
             }
 
             items(sessionWithLifts.lifts) { liftEntry ->
@@ -132,7 +144,7 @@ fun LiftGoalScreen(
                             )
                             Row {
                                 Text(
-                                    text = "${liftEntry.weightKg} Kg",
+                                    text = decimalFormatter.format(liftEntry.weightKg),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Text(" • ")
@@ -143,8 +155,9 @@ fun LiftGoalScreen(
                             }
                         }
 
-                        Card {
+                        ElevatedCard {
                             Row(
+                                modifier = Modifier.padding(start = Dimens.PaddingMed),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(
@@ -193,10 +206,12 @@ fun WeekNavigation(
     onPreviousWeek: () -> Unit,
     onNextWeek: () -> Unit
 ) {
+    val formatter = DateTimeFormatter.ofPattern("dd MMM")
+
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onPreviousWeek) {
@@ -207,7 +222,7 @@ fun WeekNavigation(
         }
 
         Text(
-            text = "${currentDate.startOfWeek} – ${currentDate.endofWeek}",
+            text ="${currentDate.startOfWeek.format(formatter)} – ${currentDate.endofWeek.format(formatter)}",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(horizontal = Dimens.MarginMed)
         )

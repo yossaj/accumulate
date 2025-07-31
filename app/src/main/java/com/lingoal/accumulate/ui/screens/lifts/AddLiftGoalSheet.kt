@@ -89,7 +89,7 @@ fun AddLiftGoalSheet(
                 modifier = Modifier.padding(Dimens.MarginMed),
                 verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
             ) {
-                items(state.liftEntries) { liftEntry ->
+                items(state.lifts) { liftEntry ->
                     Card {
                         Column(
                             modifier = Modifier
@@ -103,6 +103,7 @@ fun AddLiftGoalSheet(
                 }
             }
         }
+
         Button(
             modifier = Modifier
                 .align(alignment = Alignment.BottomCenter)
@@ -113,7 +114,9 @@ fun AddLiftGoalSheet(
                 viewModel.saveSessionAndGoals()
                 dismiss.invoke()
             }) {
-            Text("Start Session")
+            Text(
+                if(state.isUpdate){ "Add To Session" } else { "Start Session" }
+            )
         }
     }
 }

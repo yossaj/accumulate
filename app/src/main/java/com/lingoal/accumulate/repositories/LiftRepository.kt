@@ -1,6 +1,5 @@
 package com.lingoal.accumulate.repositories
 
-import com.lingoal.accumulate.models.GoalWithSessionsAndLifts
 import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftEntryDao
 import com.lingoal.accumulate.models.LiftGoal
@@ -11,6 +10,7 @@ import com.lingoal.accumulate.models.SessionWithLifts
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class LiftRepository @Inject constructor(
     private val liftGoalDao: LiftGoalDao,
@@ -32,4 +32,7 @@ class LiftRepository @Inject constructor(
     fun getCurrentGoal(date: LocalDate): Flow<LiftGoal?> =  liftGoalDao.getSelectedGoal(date)
 
     fun getSessionsWithLifts(goalId: Long): Flow<List<SessionWithLifts>> = liftGoalDao.getSessionsWithLifts(goalId)
+
+    suspend fun getRecentSessions(dateTime: LocalDateTime, goalId: Long) = liftSessionDao.getRecentSessions(dateTime, goalId)
+
 }
