@@ -25,22 +25,22 @@ class AddLiftGoalViewModel @Inject constructor(
 
     val goalId = MutableStateFlow<Long?>(null)
 
-    init {
+    fun initialize(){
         val inLast2Hours = LocalDateTime.now().minusHours(2)
         viewModelScope.launch {
             goalId
                 .filterNotNull()
                 .collectLatest { goalId ->
-                liftRepository.getRecentSessions(inLast2Hours, goalId)?.let { sessionWithLifts ->
-                    _uiState.update {
-                        it.copy(
-                            isUpdate = true,
-                            liftSession = sessionWithLifts.session,
-                            existingLifts = sessionWithLifts.lifts,
-                        )
+                    liftRepository.getRecentSessions(inLast2Hours, goalId)?.let { sessionWithLifts ->
+                        _uiState.update {
+                            it.copy(
+                                isUpdate = true,
+                                liftSession = sessionWithLifts.session,
+                                existingLifts = sessionWithLifts.lifts,
+                            )
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -48,16 +48,16 @@ class AddLiftGoalViewModel @Inject constructor(
 
     fun setLiftType(liftTypes: LiftEntry.LiftTypes) = _uiState.update { it.copy(liftType = liftTypes) }
 
-    fun setWeight(weight: String) = _uiState.update { it.copy(weight = weight.toFloatOrNull()) }
+    fun setWeight(weight: String) = _uiState.update { it.copy(weight = weight) }
 
     fun setLiftGoal(liftGoalId: Long) = goalId.update { liftGoalId }
 
     fun addGoal(){
         val liftName = _uiState.value.liftName ?: return
         val liftType = _uiState.value.liftType ?: return
-        val weight = _uiState.value.weight ?: return
+        val weight = _uiState.value.weight?.toFloatOrNull() ?: return
 
-        if (_uiState.value.liftSession == null){
+        if (_uiState.value.liftSession == null) {
             createSession()
         }
 
@@ -75,6 +75,7 @@ class AddLiftGoalViewModel @Inject constructor(
             )
 
             _uiState.update { it.copy(liftEntries = currentEntries)}
+            clearInputs()
         }
     }
 
@@ -86,11 +87,27 @@ class AddLiftGoalViewModel @Inject constructor(
         _uiState.update { it.copy(liftSession = liftSession) }
     }
 
+    private fun clearState() = _uiState.update { it.copy(
+        isUpdate = false,
+        liftName = null,
+        liftType = null,
+        weight = "10",
+        liftSession = null,
+        liftEntries = emptyList(),
+        existingLifts = emptyList(),
+    ) }
+
+    private fun clearInputs() = _uiState.update { it.copy(
+        liftName = null,
+        liftType = null,
+        weight = "10",
+    ) }
+
     fun saveSessionAndGoals(){
         val session = _uiState.value.liftSession ?: return
 
         viewModelScope.launch {
-            val sessionId = if (_uiState.value.isUpdate) session.id else  liftRepository.insertLiftSession(session)
+            val sessionId = if (_uiState.value.isUpdate) session.id else liftRepository.insertLiftSession(session)
 
             Log.d("AddLiftGoal", sessionId.toString())
             val selectedList = _uiState.value.liftEntries
@@ -99,6 +116,7 @@ class AddLiftGoalViewModel @Inject constructor(
 
             launch {
                 liftRepository.insertLiftEntries(entries)
+                clearState()
             }
         }
     }

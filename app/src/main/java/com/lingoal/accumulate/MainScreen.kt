@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,15 +35,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.lingoal.accumulate.models.LiftGoal
 import com.lingoal.accumulate.ui.screens.lifts.AddLiftGoalSheet
 import com.lingoal.accumulate.ui.screens.lifts.LiftGoalScreen
 import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
@@ -155,12 +155,15 @@ fun MainScreen(
                 onDismissRequest = { openAddGoalSheet = false },
                 sheetState = addGoalSheetState
             ) {
-                when(selectedDestination){
-                    0 -> AddTimeGoalSheet( dismiss = { openAddGoalSheet = false })
-                    1 -> AddLiftGoalSheet(
-                        liftGoalId = currentLiftGoalId,
-                        dismiss = { openAddGoalSheet = false },
-                    )
+                key(selectedDestination) {
+                    when(selectedDestination){
+                        0 -> AddTimeGoalSheet( dismiss = { openAddGoalSheet = false })
+                        1 -> AddLiftGoalSheet(
+                            liftGoalId = currentLiftGoalId,
+                            sheetState = addGoalSheetState,
+                            dismiss = { openAddGoalSheet = false },
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,10 +15,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,14 +30,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.models.LiftEntry.LiftTypes
 import com.lingoal.accumulate.ui.components.DropdownMenu
 import com.lingoal.accumulate.ui.dimens.Dimens
+import java.text.DecimalFormat
 
 @Composable
 fun AddLiftGoalSheet(
     modifier: Modifier = Modifier,
     liftGoalId: Long? = null,
+    sheetState: SheetState,
     viewModel: AddLiftGoalViewModel = hiltViewModel(),
     dismiss: () -> Unit,
 ) {
+    val decimalFormatter = DecimalFormat("#.##")
+
+    LaunchedEffect(sheetState) {
+        snapshotFlow { sheetState.currentValue }
+            .collect { value ->
+                if (value == SheetValue.Expanded) {
+                    viewModel.initialize()
+                }
+            }
+    }
 
     LaunchedEffect(liftGoalId) {
         if (liftGoalId != null){
@@ -69,7 +85,7 @@ fun AddLiftGoalSheet(
                     )
 
                     OutlinedTextField(
-                        value = state.weight?.toString().orEmpty(),
+                        value = state.weight.orEmpty(),
                         onValueChange = viewModel::setWeight,
                         label = { Text("Weight") },
                         keyboardOptions = KeyboardOptions(
@@ -87,7 +103,8 @@ fun AddLiftGoalSheet(
 
             LazyColumn(
                 modifier = Modifier.padding(Dimens.MarginMed),
-                verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
+                verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall),
+                contentPadding = PaddingValues(bottom = Dimens.LargeBottomPadding)
             ) {
                 items(state.lifts) { liftEntry ->
                     Card {

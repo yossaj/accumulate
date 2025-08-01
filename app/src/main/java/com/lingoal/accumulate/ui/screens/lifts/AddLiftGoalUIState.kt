@@ -8,7 +8,7 @@ data class AddLiftGoalUIState(
     val isUpdate: Boolean = false,
     val liftName: String? = null,
     val liftType: LiftTypes? = null,
-    val weight: Float? = 10f,
+    val weight: String? = "10",
     val reps: Int = 10,
     val sets: Int = 0,
     val liftSession: LiftSession? = null,

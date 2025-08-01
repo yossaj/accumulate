@@ -8,7 +8,7 @@ object Dimens {
 
     val PaddingSmall = 10.dp
     val PaddingMed = 20.dp
-    val FABMargin = 72.dp
+    val LargeBottomPadding = 72.dp
 
     val RoundingMed = 16.dp
     val RoundingSmall = 6.dp
