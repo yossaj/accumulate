@@ -7,6 +7,7 @@ import com.lingoal.accumulate.models.LiftSession
 data class AddLiftGoalUIState(
     val isUpdate: Boolean = false,
     val liftName: String? = null,
+    val liftNameSuggestions: List<String> = emptyList(),
     val liftType: LiftTypes? = null,
     val weight: String? = "10",
     val reps: Int = 10,

@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,9 +31,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lingoal.accumulate.models.LiftEntry.LiftTypes
+import com.lingoal.accumulate.ui.components.AutoCompleteTextView
 import com.lingoal.accumulate.ui.components.DropdownMenu
+import com.lingoal.accumulate.ui.components.PredictionItem
 import com.lingoal.accumulate.ui.dimens.Dimens
-import java.text.DecimalFormat
 
 @Composable
 fun AddLiftGoalSheet(
@@ -40,8 +44,6 @@ fun AddLiftGoalSheet(
     viewModel: AddLiftGoalViewModel = hiltViewModel(),
     dismiss: () -> Unit,
 ) {
-    val decimalFormatter = DecimalFormat("#.##")
-
     LaunchedEffect(sheetState) {
         snapshotFlow { sheetState.currentValue }
             .collect { value ->
@@ -58,6 +60,12 @@ fun AddLiftGoalSheet(
     }
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val allSuggestions = state.liftNameSuggestions
+    var selected by remember { mutableStateOf("") }
+    var query by remember { mutableStateOf("") }
+    var predictions by remember { mutableStateOf(emptyList<String>()) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             Modifier.fillMaxSize(),
@@ -70,10 +78,36 @@ fun AddLiftGoalSheet(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
                 ) {
-                    OutlinedTextField(
-                        value = state.liftName.orEmpty(),
-                        onValueChange = viewModel::setLiftName,
-                        label = { Text("Lift Name") },
+                    AutoCompleteTextView(
+                        query = selected.takeIf { it.isNotEmpty() } ?: query,
+                        label = "Lift Name",
+                        predictions = predictions,
+                        onQueryChanged = { updatedQuery ->
+                            viewModel.setLiftName(updatedQuery)
+                            query = updatedQuery
+                            predictions = allSuggestions.filter { it.lowercase().contains(updatedQuery.lowercase()) }
+                        },
+                        onDoneActionClick = {
+                            if (predictions.isNotEmpty())
+                                selected = predictions.first()
+                        },
+                        onClearClick = {
+                            viewModel.setLiftName("")
+                            query = ""
+                            selected = ""
+                            predictions = emptyList()
+                        },
+                        itemContent = {
+                            PredictionItem(
+                                prediction = it,
+                                onItemClick = {
+                                    selected = it
+                                    viewModel.setLiftName(selected)
+                                    query = ""
+                                    predictions = emptyList()
+                                }
+                            )
+                        }
                     )
 
                     DropdownMenu(

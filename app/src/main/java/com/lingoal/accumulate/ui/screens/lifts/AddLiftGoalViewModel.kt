@@ -3,6 +3,7 @@ package com.lingoal.accumulate.ui.screens.lifts
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftSession
 import com.lingoal.accumulate.repositories.LiftRepository
@@ -24,6 +25,14 @@ class AddLiftGoalViewModel @Inject constructor(
     val uiState: StateFlow<AddLiftGoalUIState> get() = _uiState
 
     val goalId = MutableStateFlow<Long?>(null)
+
+    init {
+        viewModelScope.launch {
+            liftRepository.getExistingExerciseNames().collectLatest { liftNameSuggestions ->
+                _uiState.update { it.copy(liftNameSuggestions = liftNameSuggestions) }
+            }
+        }
+    }
 
     fun initialize(){
         val inLast2Hours = LocalDateTime.now().minusHours(2)

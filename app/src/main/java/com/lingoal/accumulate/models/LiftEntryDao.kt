@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 @Dao
@@ -28,6 +29,11 @@ interface LiftEntryDao {
         WHERE timestamp BETWEEN :start AND :end
     """)
     fun getEntriesBetween(start: LocalDateTime, end: LocalDateTime): List<LiftEntry>
+
+    @Query("""
+        SELECT DISTINCT liftName FROM lift_entries
+    """)
+    fun getExistingExerciseNames(): Flow<List<String>>
 
     @Query("""
         SELECT SUM(weightKg * reps * sets)

@@ -35,4 +35,6 @@ class LiftRepository @Inject constructor(
 
     suspend fun getRecentSessions(dateTime: LocalDateTime, goalId: Long) = liftSessionDao.getRecentSessions(dateTime, goalId)
 
+    fun getExistingExerciseNames(): Flow<List<String>> = liftEntryDao.getExistingExerciseNames()
+
 }
