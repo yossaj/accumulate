@@ -1,5 +1,9 @@
 package com.lingoal.accumulate.repositories
 
+import com.lingoal.accumulate.extensions.endOfMonth
+import com.lingoal.accumulate.extensions.startOfMonth
+import com.lingoal.accumulate.extensions.startOfWeek
+import com.lingoal.accumulate.models.DailyLiftedTotal
 import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftEntryDao
 import com.lingoal.accumulate.models.LiftGoal
@@ -36,5 +40,12 @@ class LiftRepository @Inject constructor(
     suspend fun getRecentSessions(dateTime: LocalDateTime, goalId: Long) = liftSessionDao.getRecentSessions(dateTime, goalId)
 
     fun getExistingExerciseNames(): Flow<List<String>> = liftEntryDao.getExistingExerciseNames()
+
+    suspend fun getTotalLiftedPerDayBetween(selectedDate: LocalDate): List<DailyLiftedTotal> {
+        val start = selectedDate.startOfMonth
+        val end = selectedDate.endOfMonth
+
+        return liftEntryDao.getTotalLiftedPerDayBetween(start, end)
+    }
 
 }

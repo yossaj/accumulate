@@ -44,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lingoal.accumulate.ui.screens.lifts.AddLiftGoalSheet
+import com.lingoal.accumulate.ui.screens.lifts.LiftDetailScreen
 import com.lingoal.accumulate.ui.screens.lifts.LiftGoalScreen
 import com.lingoal.accumulate.ui.screens.time.dashboard.DashboardScreen
 import com.lingoal.accumulate.ui.screens.time.goal.AddTimeGoalSheet
@@ -200,8 +201,13 @@ fun NavGraphBuilder.weightGraph(navController: NavHostController, onGoalSet: (Lo
     navigation(startDestination = LiftScreens.Dashboard.name, route = RootDestination.WEIGHT.route) {
         composable(LiftScreens.Dashboard.name) {
             LiftGoalScreen(
-                onGoalSet = onGoalSet
+                onGoalSet = onGoalSet,
+                onOpenDetails = { navController.navigate(LiftScreens.Detail.name) }
             )
+        }
+
+        composable(LiftScreens.Detail.name){
+            LiftDetailScreen()
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Dao
@@ -41,4 +42,16 @@ interface LiftEntryDao {
         WHERE timestamp BETWEEN :start AND :end
     """)
     fun getTotalLiftedBetween(start: LocalDateTime, end: LocalDateTime): Float?
+
+    @Query("""
+    SELECT DATE(timestamp) as date, SUM(weightKg * reps * sets) as total
+    FROM lift_entries
+    WHERE timestamp BETWEEN :start AND :end
+    GROUP BY DATE(timestamp)
+    ORDER BY DATE(timestamp)
+""")
+    suspend fun getTotalLiftedPerDayBetween(start: LocalDate, end: LocalDate): List<DailyLiftedTotal>
+
+
+
 }

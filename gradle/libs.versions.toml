@@ -18,6 +18,7 @@ roomRuntime = "2.7.2"
 lifecycleRuntimeComposeAndroid = "2.8.6"
 material = "1.7.3"
 roomTestingAndroid = "2.7.2"
+ycharts = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,8 @@ androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", nam
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 androidx-room-testing-android = { group = "androidx.room", name = "room-testing-android", version.ref = "roomTestingAndroid" }
+ycharts = {group = "co.yml", name = "ycharts", version.ref="ycharts"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

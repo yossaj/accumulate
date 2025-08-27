@@ -35,16 +35,15 @@ import com.lingoal.accumulate.models.cumulativeWeight
 import com.lingoal.accumulate.ui.components.ProgressBar
 import com.lingoal.accumulate.ui.dimens.Dimens
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun LiftGoalScreen(
     modifier: Modifier = Modifier,
     viewModel: LiftGoalViewModel = hiltViewModel(),
-    onGoalSet: (Long) -> Unit
+    onGoalSet: (Long) -> Unit,
+    onOpenDetails: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
@@ -57,6 +56,13 @@ fun LiftGoalScreen(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
     ) {
+        item {
+            Button(onClick = {
+                onOpenDetails.invoke()
+            }) {
+                Text("Progress")
+            }
+        }
         item {
             WeekNavigation(
                 currentDate = currentDateState,

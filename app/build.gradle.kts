@@ -88,6 +88,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.ycharts)
+
 
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.room.runtime)
