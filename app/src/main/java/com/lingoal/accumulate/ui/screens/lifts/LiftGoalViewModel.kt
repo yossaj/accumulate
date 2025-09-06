@@ -32,7 +32,10 @@ class LiftGoalViewModel @Inject constructor(
             selectedDate.collectLatest { selectedDate ->
                 liftRepository.getCurrentGoal(selectedDate).collectLatest { liftGoal  ->
                     _uiState.update { it.copy(liftGoal = liftGoal) }
-                    liftGoal?.let {
+
+                    if (liftGoal == null){
+                        _uiState.update { it.copy(sessionsWithLifts = emptyList()) }
+                    } else {
                         launch {
                             liftRepository.getSessionsWithLifts(liftGoal.id).collectLatest { sessionsWithLifts ->
                                 _uiState.update { it.copy(sessionsWithLifts = sessionsWithLifts) }

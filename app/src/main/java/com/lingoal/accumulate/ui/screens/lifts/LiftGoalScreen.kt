@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,14 +37,16 @@ import com.lingoal.accumulate.ui.components.ProgressBar
 import com.lingoal.accumulate.ui.dimens.Dimens
 import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 @Composable
 fun LiftGoalScreen(
     modifier: Modifier = Modifier,
     viewModel: LiftGoalViewModel = hiltViewModel(),
     onGoalSet: (Long) -> Unit,
-    onOpenDetails: () -> Unit
+    onOpenDetails: (dateLong: Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
@@ -56,13 +59,6 @@ fun LiftGoalScreen(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Dimens.MarginSmall)
     ) {
-        item {
-            Button(onClick = {
-                onOpenDetails.invoke()
-            }) {
-                Text("Progress")
-            }
-        }
         item {
             WeekNavigation(
                 currentDate = currentDateState,
@@ -110,6 +106,22 @@ fun LiftGoalScreen(
                             onGoalSet.invoke(goal.id)
                             Text(text = state.cumulativeTotal.toString() + " / " + goal.targetWeightKg.toString() + " Kg")
                             ProgressBar(progress = state.cumulativeTotal.toFloat() / goal.targetWeightKg.toFloat())
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(onClick = {
+                                onOpenDetails.invoke(
+                                    currentDateState
+                                        .atStartOfDay(ZoneId.systemDefault())
+                                        .toInstant()
+                                        .toEpochMilli()
+                                )
+                            }) {
+                                Text("View Progress")
+                            }
                         }
                     }
                 }

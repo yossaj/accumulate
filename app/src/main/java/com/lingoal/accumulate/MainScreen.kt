@@ -202,11 +202,19 @@ fun NavGraphBuilder.weightGraph(navController: NavHostController, onGoalSet: (Lo
         composable(LiftScreens.Dashboard.name) {
             LiftGoalScreen(
                 onGoalSet = onGoalSet,
-                onOpenDetails = { navController.navigate(LiftScreens.Detail.name) }
+                onOpenDetails = { date -> navController.navigate(LiftScreens.Detail.name + "?date=${date}") }
             )
         }
 
-        composable(LiftScreens.Detail.name){
+        composable(
+            route = LiftScreens.Detail.name + "?date={date}",
+            arguments = listOf(
+                navArgument("date"){
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )
+            ){
             LiftDetailScreen()
         }
     }

@@ -6,9 +6,8 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 data class LiftDetailUIState(
-    val pushLifts: List<Int> = emptyList(),
-    val pullLifts: List<Int> = emptyList(),
-    val legLifts: List<Int> = emptyList(),
+    val currentGoal: Int? = null,
+
     val liftTotals: List<DailyLiftedTotal> = emptyList()
 ) {
     val maxValue = liftTotals.maxOfOrNull { it.total }?.toInt() ?: 0

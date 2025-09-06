@@ -33,7 +33,8 @@ fun LiftDetailScreen(
 
     val monthLiftsPointsData: List<Point> = state.data
     val xSteps = state.daysInMonth
-    val liftTargetDataPoints: List<Point> = listOf(Point(1f,0f), Point(xSteps.toFloat(), 10000f))
+    val goalWeightReference = state.currentGoal?.toFloat() ?: 10000f
+    val liftTargetDataPoints: List<Point> = listOf(Point(1f, goalWeightReference), Point(xSteps.toFloat(), goalWeightReference))
 
     // ySteps
     val yLabelCount = 5
@@ -67,7 +68,10 @@ fun LiftDetailScreen(
                 ),
                 Line(
                     dataPoints = liftTargetDataPoints,
-                    LineStyle(lineType = LineType.Straight()),
+                    LineStyle(
+                        lineType = LineType.Straight(),
+                        color = Color.Red
+                    ),
                     IntersectionPoint(),
                     SelectionHighlightPoint(),
                     ShadowUnderLine(),
