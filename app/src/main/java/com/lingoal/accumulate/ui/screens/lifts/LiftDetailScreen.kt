@@ -1,9 +1,18 @@
 package com.lingoal.accumulate.ui.screens.lifts
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -33,7 +42,7 @@ fun LiftDetailScreen(
 
     val monthLiftsPointsData: List<Point> = state.data
     val xSteps = state.daysInMonth
-    val goalWeightReference = state.currentGoal?.toFloat() ?: 10000f
+    val goalWeightReference = state.targetWeight?.toFloat() ?: 10000f
     val liftTargetDataPoints: List<Point> = listOf(Point(1f, goalWeightReference), Point(xSteps.toFloat(), goalWeightReference))
 
     // ySteps
@@ -72,9 +81,11 @@ fun LiftDetailScreen(
                         lineType = LineType.Straight(),
                         color = Color.Red
                     ),
-                    IntersectionPoint(),
+                    IntersectionPoint(
+                        color = Color.Transparent
+                    ),
                     SelectionHighlightPoint(),
-                    ShadowUnderLine(),
+                    ShadowUnderLine(color = Color.Transparent),
                     SelectionHighlightPopUp()
                 )
             ),
@@ -82,17 +93,54 @@ fun LiftDetailScreen(
         xAxisData = xAxisData,
         yAxisData = yAxisData,
         gridLines = GridLines(),
-        backgroundColor = Color.White
+        backgroundColor = Color.Transparent
     )
 
-    if (monthLiftsPointsData.isNotEmpty()){
-        LineChart(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-            lineChartData = lineChartData
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TimePeriodSegmentedButton(
+            modifier = Modifier.fillMaxWidth(),
+            viewModel::setSelectedTimePeriod
         )
+
+        if (monthLiftsPointsData.isNotEmpty()){
+
+            LineChart(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                lineChartData = lineChartData
+            )
+        }
     }
+
 }
 
 fun Float.formatToSinglePrecision(): String = DecimalFormat("#.#").format(this)
+
+@Composable
+fun TimePeriodSegmentedButton(
+    modifier: Modifier = Modifier,
+    onPeriodSelected: (LiftDetailUIState.TimePeriod) -> Unit
+) {
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    val options = LiftDetailUIState.TimePeriod.entries.toTypedArray()
+
+    SingleChoiceSegmentedButtonRow {
+        options.forEachIndexed { index, timePeriod ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = options.size
+                ),
+                onClick = {
+                    selectedIndex = index
+                    onPeriodSelected.invoke(timePeriod)
+                          },
+                selected = index == selectedIndex,
+                label = { Text(timePeriod.text) }
+            )
+        }
+    }
+}

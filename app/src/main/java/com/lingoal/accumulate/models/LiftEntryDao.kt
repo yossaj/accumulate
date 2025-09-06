@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -50,8 +51,6 @@ interface LiftEntryDao {
     GROUP BY DATE(timestamp)
     ORDER BY DATE(timestamp)
 """)
-    suspend fun getTotalLiftedPerDayBetween(start: LocalDate, end: LocalDate): List<DailyLiftedTotal>
-
-
+    fun getTotalLiftedPerDayBetween(start: LocalDate, end: LocalDate): Flow<List<DailyLiftedTotal>>
 
 }

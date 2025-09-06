@@ -35,6 +35,15 @@ interface LiftGoalDao {
     """)
     fun getSelectedGoal(today: LocalDate = LocalDate.now()): Flow<LiftGoal?>
 
+
+    @Query("""
+    SELECT SUM(targetWeightKg)
+    FROM lift_goals
+    WHERE startDate <= :end
+    AND endDate >= :start
+    """)
+    fun getTargetGoalTotalForPeriod(start: LocalDate, end: LocalDate): Flow<Int?>
+
     @Transaction
     @Query("""
     SELECT * FROM lift_sessions 
