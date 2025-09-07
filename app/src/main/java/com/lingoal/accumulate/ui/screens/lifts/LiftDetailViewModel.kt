@@ -3,6 +3,7 @@ package com.lingoal.accumulate.ui.screens.lifts
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.repositories.LiftRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,11 +46,17 @@ class LiftDetailViewModel @Inject constructor(
                 .flatMapLatest { period ->
                     combine(
                         liftRepository.getTotalLiftedPerDayBetween(localDate, period),
-                        liftRepository.getTargetGoalTotalForPeriod(localDate, period)
-                    ) { totals, targetWeight ->
+                        liftRepository.getTargetGoalTotalForPeriod(localDate, period),
+                        liftRepository.getTotalLiftedForTypeBetween(localDate, period, LiftEntry.LiftTypes.Legs),
+                        liftRepository.getTotalLiftedForTypeBetween(localDate, period, LiftEntry.LiftTypes.Pull),
+                        liftRepository.getTotalLiftedForTypeBetween(localDate, period, LiftEntry.LiftTypes.Push),
+                    ) { totals, targetWeight, legTotal, pullTotal, pushTotal ->
                         _uiState.value.copy(
                             liftTotals = totals,
-                            targetWeight = targetWeight
+                            targetWeight = targetWeight,
+                            legTotal = legTotal,
+                            pullTotal = pullTotal,
+                            pushTotal = pushTotal
                         )
                     }
                 }

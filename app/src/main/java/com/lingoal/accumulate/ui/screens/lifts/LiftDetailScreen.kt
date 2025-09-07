@@ -1,8 +1,12 @@
 package com.lingoal.accumulate.ui.screens.lifts
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -19,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.yml.charts.axis.AxisData
+import co.yml.charts.common.model.PlotType
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
@@ -31,7 +36,10 @@ import co.yml.charts.ui.linechart.model.LineType
 import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
-import java.text.DecimalFormat
+import co.yml.charts.ui.piechart.charts.DonutPieChart
+import co.yml.charts.ui.piechart.models.PieChartConfig
+import co.yml.charts.ui.piechart.models.PieChartData
+import com.lingoal.accumulate.ui.dimens.Dimens
 
 @Composable
 fun LiftDetailScreen(
@@ -39,85 +47,110 @@ fun LiftDetailScreen(
     viewModel: LiftDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val monthLiftsPointsData: List<Point> = state.data
-    val xSteps = state.daysInMonth
-    val goalWeightReference = state.targetWeight?.toFloat() ?: 10000f
-    val liftTargetDataPoints: List<Point> = listOf(Point(1f, goalWeightReference), Point(xSteps.toFloat(), goalWeightReference))
-
-    // ySteps
-    val yLabelCount = 5
-    val roundTo = 1000
-    val maxRounded = ((state.maxValue  + roundTo - 1) / roundTo) * roundTo
-    val stepSize = (maxRounded / yLabelCount)
-
-    val xAxisData = AxisData.Builder()
-        .axisStepSize(20.dp)
-        .steps(xSteps)
-        .labelData { i -> (i + 1).toString() }
-        .labelAndAxisLinePadding(15.dp)
-        .build()
-
-    val yAxisData = AxisData.Builder()
-        .labelAndAxisLinePadding(20.dp)
-        .steps(yLabelCount)
-        .labelData { i -> (i * stepSize).toString() }
-        .build()
-
-    val lineChartData = LineChartData(
-        linePlotData = LinePlotData(
-            lines = listOf(
-                Line(
-                    dataPoints = monthLiftsPointsData,
-                    LineStyle(lineType = LineType.Straight()),
-                    IntersectionPoint(),
-                    SelectionHighlightPoint(),
-                    ShadowUnderLine(),
-                    SelectionHighlightPopUp()
-                ),
-                Line(
-                    dataPoints = liftTargetDataPoints,
-                    LineStyle(
-                        lineType = LineType.Straight(),
-                        color = Color.Red
-                    ),
-                    IntersectionPoint(
-                        color = Color.Transparent
-                    ),
-                    SelectionHighlightPoint(),
-                    ShadowUnderLine(color = Color.Transparent),
-                    SelectionHighlightPopUp()
-                )
-            ),
-        ),
-        xAxisData = xAxisData,
-        yAxisData = yAxisData,
-        gridLines = GridLines(),
-        backgroundColor = Color.Transparent
-    )
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    BoxWithConstraints(
+        modifier = modifier.fillMaxWidth()
     ) {
-        TimePeriodSegmentedButton(
-            modifier = Modifier.fillMaxWidth(),
-            viewModel::setSelectedTimePeriod
+
+        val screenWidth = maxWidth
+        val xStepSize = if (state.xSteps > 0) {
+            screenWidth / state.xSteps
+        } else {
+            0.dp
+        }
+
+        val data = state.cumulativePoints.map { (x, y) -> Point(x, y) }
+        val targetLine = state.liftTargetPoints.map { (x, y) -> Point(x, y) }
+
+        val xAxisData = AxisData.Builder()
+            .axisStepSize(xStepSize)
+            .steps(state.xSteps)
+            .labelData { i ->
+                if (i % (state.xSteps / 12).coerceAtLeast(1) == 0) (i + 1).toString()  else ""
+            }
+            .labelAndAxisLinePadding(15.dp)
+            .build()
+
+        val yAxisData = AxisData.Builder()
+            .labelAndAxisLinePadding(20.dp)
+            .steps(state.yLabelCount)
+            .labelData { i -> (i * state.yStepSize).toString() }
+            .build()
+
+        val lineChartData = LineChartData(
+            linePlotData = LinePlotData(
+                lines = listOf(
+                    Line(
+                        dataPoints = data,
+                        LineStyle(lineType = LineType.Straight()),
+                        IntersectionPoint(),
+                        SelectionHighlightPoint(),
+                        ShadowUnderLine(),
+                        SelectionHighlightPopUp()
+                    ),
+                    Line(
+                        dataPoints = targetLine,
+                        LineStyle(
+                            lineType = LineType.Straight(),
+                            color = Color.Red
+                        ),
+                        IntersectionPoint(
+                            color = Color.Transparent
+                        ),
+                        SelectionHighlightPoint(),
+                        ShadowUnderLine(color = Color.Transparent),
+                        SelectionHighlightPopUp()
+                    )
+                ),
+            ),
+            xAxisData = xAxisData,
+            yAxisData = yAxisData,
+            gridLines = GridLines(),
+            backgroundColor = Color.Transparent
         )
 
-        if (monthLiftsPointsData.isNotEmpty()){
+        val donutChartData = PieChartData(
+            slices = listOf(
+                PieChartData.Slice("Legs", state.legTotal, Color(0xFF20BF55)),
+                PieChartData.Slice("Push", state.pushTotal,  Color(0xFFEC9F05)),
+                PieChartData.Slice("Pull", state.pullTotal, Color(0xFFF53844))
+            ),
+            plotType = PlotType.Donut
+        )
 
-            LineChart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                lineChartData = lineChartData
+        val donutChartConfig = PieChartConfig(
+            strokeWidth = 80f,
+            activeSliceAlpha = .9f,
+            isAnimationEnable = true,
+            backgroundColor = Color.Transparent
+        )
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TimePeriodSegmentedButton(
+                modifier = Modifier.fillMaxWidth(),
+                viewModel::setSelectedTimePeriod
+            )
+
+            if (data.isNotEmpty()){
+                LineChart(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    lineChartData = lineChartData
+                )
+            }
+
+            DonutPieChart(
+                modifier = Modifier.padding(Dimens.MarginMed),
+                donutChartData,
+                donutChartConfig
             )
         }
+
     }
-
 }
-
-fun Float.formatToSinglePrecision(): String = DecimalFormat("#.#").format(this)
 
 @Composable
 fun TimePeriodSegmentedButton(

@@ -53,4 +53,13 @@ interface LiftEntryDao {
 """)
     fun getTotalLiftedPerDayBetween(start: LocalDate, end: LocalDate): Flow<List<DailyLiftedTotal>>
 
+    @Query("""
+        SELECT SUM(weightKg * reps * sets) as total
+        FROM lift_entries
+        WHERE timestamp BETWEEN :start AND :end
+        AND liftType = :liftType
+    """)
+    fun getTotalLiftedForTypeBetween(start: LocalDate, end: LocalDate, liftType: LiftEntry.LiftTypes): Flow<Float>
+
+
 }

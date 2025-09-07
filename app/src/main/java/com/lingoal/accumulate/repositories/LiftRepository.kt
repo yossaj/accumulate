@@ -51,6 +51,13 @@ class LiftRepository @Inject constructor(
         return liftEntryDao.getTotalLiftedPerDayBetween(start, end)
     }
 
+    fun getTotalLiftedForTypeBetween(selectedDate: LocalDate,  period: LiftDetailUIState.TimePeriod, liftType: LiftEntry.LiftTypes): Flow<Float> {
+        val (start, end) = getDateRangeForPeriod(period, selectedDate)
+
+        return liftEntryDao.getTotalLiftedForTypeBetween(start, end, liftType)
+    }
+
+
     private fun getDateRangeForPeriod(
         period: LiftDetailUIState.TimePeriod,
         selectedDate: LocalDate
