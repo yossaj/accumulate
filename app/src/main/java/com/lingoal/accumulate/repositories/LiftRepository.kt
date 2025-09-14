@@ -1,5 +1,6 @@
 package com.lingoal.accumulate.repositories
 
+import com.lingoal.accumulate.extensions.toEndOfDayString
 import com.lingoal.accumulate.models.DailyLiftedTotal
 import com.lingoal.accumulate.models.LiftEntry
 import com.lingoal.accumulate.models.LiftEntryDao
@@ -52,7 +53,7 @@ class LiftRepository @Inject constructor(
     }
 
     fun getTotalLiftedForTypeBetween(selectedDate: LocalDate,  period: LiftDetailUIState.TimePeriod, liftType: LiftEntry.LiftTypes): Flow<Float> {
-        val (start, end) = getDateRangeForPeriod(period, selectedDate)
+        val (start, end) = getDateRangeForPeriodAsLocalDateTime(period, selectedDate)
 
         return liftEntryDao.getTotalLiftedForTypeBetween(start, end, liftType)
     }
@@ -61,7 +62,7 @@ class LiftRepository @Inject constructor(
     private fun getDateRangeForPeriod(
         period: LiftDetailUIState.TimePeriod,
         selectedDate: LocalDate
-    ) = when (period) {
+    ): Pair<LocalDate, LocalDate> = when (period) {
         LiftDetailUIState.TimePeriod.Weekly -> {
             val start = selectedDate.with(DayOfWeek.MONDAY)
             val end = start.plusDays(6)
@@ -81,4 +82,12 @@ class LiftRepository @Inject constructor(
         }
     }
 
+    private fun getDateRangeForPeriodAsLocalDateTime(
+        period: LiftDetailUIState.TimePeriod,
+        selectedDate: LocalDate
+    ): Pair<LocalDateTime, LocalDateTime> {
+        val (start, end) = getDateRangeForPeriod(period, selectedDate)
+        return start.atStartOfDay() to end.toEndOfDayString()
+    }
 }
+

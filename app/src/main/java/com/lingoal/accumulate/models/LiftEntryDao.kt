@@ -59,7 +59,7 @@ interface LiftEntryDao {
         WHERE timestamp BETWEEN :start AND :end
         AND liftType = :liftType
     """)
-    fun getTotalLiftedForTypeBetween(start: LocalDate, end: LocalDate, liftType: LiftEntry.LiftTypes): Flow<Float>
+    fun getTotalLiftedForTypeBetween(start: LocalDateTime, end: LocalDateTime, liftType: LiftEntry.LiftTypes): Flow<Float>
 
 
 }
